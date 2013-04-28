@@ -43,7 +43,14 @@ private
     end
     
     def proceedings
-      Proceedings.new(JSON.parse(File.read("content.json")))
+      manifest_missing unless File.exist?("manifest.json")
+      Proceedings.new(JSON.parse(File.read("manifest.json")))
+    end
+    
+    def manifest_missing
+      puts "Error: lncs could not find a manifest.json file in the current directory."
+      puts "You can use 'lncs init' to create a basic manifest file."
+      exit 1
     end
   end
 end

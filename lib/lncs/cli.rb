@@ -5,7 +5,7 @@ module LNCS
   class CLI < Thor
     desc "init", "Start an lncs project in the current directory"
     def init
-      Initialiser.new(File.expand_path('.')).run
+      Initialiser.new.run
     end
     
     desc "clean", "Remove all working directories"

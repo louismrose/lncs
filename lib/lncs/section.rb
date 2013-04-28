@@ -8,7 +8,7 @@ module LNCS
       @papers = []
       @title = section["title"]
     
-      Dir.chdir(directory) do
+      Dir.chdir(source_directory) do
         section["papers"].each do |paper_id|
           Dir.glob("*_#{paper_id}.{pdf,zip}") do |file|
             path = File.join(source_directory, file)

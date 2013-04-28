@@ -4,10 +4,11 @@ require "zip/zipfilesystem"
 
 module LNCS
   class Paper
-    def initialize(path, pdf, title)
+    def initialize(path, paper)
       @path = path
-      @pdf = pdf
-      @title = title
+      @pdf = paper["pdf"]
+      @title = paper["title"]
+      @authors = paper["authors"]
     end
   
     def name
@@ -71,8 +72,8 @@ module LNCS
     end
   
     def authors
-      if @title
-        @title["authors"].map do |a|
+      if @authors
+        @authors.map do |a|
           a.gsub(/(?<forename>\S*) (?<surname>.*)/, '\k<surname>, \k<forename>')
         end
       else
@@ -106,8 +107,8 @@ module LNCS
     def title_page
       if @title
   """
-  \\title{#{@title["title"]}}\n
-  \\author{#{@title["authors"].join(" \\and ")}}\n
+  \\title{#{@title}}\n
+  \\author{#{@authors.join(" \\and ")}}\n
   """
       else
         captured = ""

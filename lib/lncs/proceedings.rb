@@ -9,7 +9,7 @@ module LNCS
       @volume_number = manifest["volume_number"]
     
       @sections = manifest["sections"].map do |section|
-        Section.new(manifest["directory"], manifest["indexes"], manifest["titles"], section)
+        Section.new(section, manifest["sources"], manifest["papers"])
       end
     end
   
@@ -17,10 +17,10 @@ module LNCS
       sections.each { |section| section.copy_to(dst) }
     end
   
-    def compile_to(dst)
+    def generate_body_to(dst)
       start_page = 1
       @sections.each do |s|
-        start_page = s.compile_to(dst, @volume_number, start_page)
+        start_page = s.generate_body_to(dst, @volume_number, start_page)
       end
     end
   

@@ -5,7 +5,7 @@ module LNCS
   class CLI < Thor
     desc "clean", "Remove all working directories"
     def clean
-      working_directories = %w{content, submissions, title}
+      working_directories = %w{submissions, body, titles}
       working_directories.each {|d| remove_directory(d) }
     end
 
@@ -15,16 +15,16 @@ module LNCS
       proceedings.copy_to("submissions")
     end
 
-    desc "compile", "Compile the submissions, forming the directory structure required by LNCS"
-    def compile
-      remake_directory("content")
-      proceedings.compile_to("content")
+    desc "body", "Generate the set of directories containing the body of the report, in the format required by Springer LNCS"
+    def body
+      remake_directory("body")
+      proceedings.generate_body_to("body")
     end
 
-    desc "toc", "Generate an entry in the table of contents for each submission"
-    def toc
-      remake_directory("title")
-      proceedings.generate_titles_to("title")
+    desc "titles", "Generate a title page for each submission, including correct page numbers and author index entries"
+    def titles
+      remake_directory("titles")
+      proceedings.generate_titles_to("titles")
     end
 
     desc "report", "Print useful statistics about the submissions"

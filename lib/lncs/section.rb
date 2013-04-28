@@ -4,22 +4,19 @@ module LNCS
   class Section
     attr_reader :papers
   
-    def initialize(directory, indexes, titles, section)
+    def initialize(section, source_directory, papers)
       @papers = []
-      @name = section["name"]
+      @title = section["title"]
     
       Dir.chdir(directory) do
-        section["ids"].each do |id|
-          Dir.glob("*_#{id}.{pdf,zip}") do |file|
-            path = File.join(directory, file)
+        section["papers"].each do |paper_id|
+          Dir.glob("*_#{paper_id}.{pdf,zip}") do |file|
+            path = File.join(source_directory, file)
           
-            # Use the index as the name of the PDF.
-            # If no index is specified for this ID use
-            # the name of the file (which we assume is a PDF)
-            index = indexes.fetch(id.to_s, file)
-            title = titles.fetch(id.to_s, nil)
+            paper = papers.fetch(paper_id.to_s, {})
+            paper["pdf"] = file unless paper["pdf"]
           
-            @papers << Paper.new(path, index, title)
+            @papers << Paper.new(path, paper)
           end
         end
       end
@@ -29,7 +26,7 @@ module LNCS
       papers.each { |paper| paper.copy_to("#{dst}/#{paper.id}") }
     end
   
-    def compile_to(dst, volume_number, start_page)
+    def generate_body_to(dst, volume_number, start_page)
       papers.each do |paper|
         padded_start_page = "%04d" % start_page.to_s
         paper.copy_to("#{dst}/#{volume_number}#{padded_start_page}")  
@@ -48,7 +45,7 @@ module LNCS
       end
     
       File.open("#{dst}/index.tex", 'a') do |f|
-        f.write("\\addtocmark{#{@name}}\n")
+        f.write("\\addtocmark{#{@title}}\n")
         f.write(titles.map {|title| "\\input{#{title}}\n"}.join)
       end
     
@@ -56,7 +53,7 @@ module LNCS
     end
   
     def report
-      puts @name
+      puts @title
       papers.each { |paper| puts "#{"%03d" % paper.id} -- #{paper.page_count}pgs #{paper.type}" }
     end
   end

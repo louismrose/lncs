@@ -173,8 +173,7 @@ Contributing
 I'm afraid that this code is not well tested, factored or documented (yet). It was quickly hacked together whilst in my first attempt to edit an LNCS volume. If I'm ever asked to edit a second volume, I plan to tidy up this gem and add a few more features. In the meantime, psull requests are welcome.
 
 Todo list:
-* Port to Thor actions
-* How to depend on other gems from within this gem?
+* Port to Thor actions <-- latest wip seems to be causing a stack trace :/
 * Test loading classes without the executable (i.e. require "lncs" from irb)
 * Pick a license, add to repo and update gemspec
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)

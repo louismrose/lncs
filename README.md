@@ -177,3 +177,4 @@ Todo list:
 * Test loading classes without the executable (i.e. require "lncs" from irb)
 * Pick a license, add to repo and update gemspec
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)
+* Fix Markdown formatting in above code blocks

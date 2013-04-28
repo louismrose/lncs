@@ -3,6 +3,8 @@ require "json"
 
 module LNCS
   class CLI < Thor
+    include Thor::Actions
+    
     desc "init", "Start an lncs project in the current directory"
     def init
       Initialiser.new.run
@@ -39,12 +41,8 @@ module LNCS
 
 private
     def remake_directory(dir)
-      remove_directory(dir)
-      Dir.mkdir(dir)
-    end
-    
-    def remove_directory(dir)
-      FileUtils.rm_rf(dir) if Dir.exists?(dir)
+      remove_dir dir
+      empty_directory dir
     end
     
     def proceedings

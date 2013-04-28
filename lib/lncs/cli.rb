@@ -10,8 +10,8 @@ module LNCS
     
     desc "clean", "Remove all working directories"
     def clean
-      working_directories = %w{submissions, body, titles}
-      working_directories.each {|d| remove_directory(d) }
+      working_directories = %w{submissions body titles}
+      working_directories.each {|d| remove_dir(d) }
     end
 
     desc "inspect", "Unpack the submissions so that their contents can be inspected manually"

@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.summary     = %q{A few tools for automating the preparation of a Springer LNCS volume}
   spec.description = %q{Automates the production of tables of contents and author indexes, and the arrangement of papers for a Springer LNCS volume.}
 
-  spec.required_ruby_version     = '>= 1.8.7'
+  spec.required_ruby_version     = '>= 1.9.3'
   spec.required_rubygems_version = '>= 1.3.6'
 
   spec.files       = `git ls-files`.split($/)

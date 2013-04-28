@@ -1,5 +1,3 @@
-require_relative "paper"
-
 module LNCS
   class Section
     attr_reader :papers

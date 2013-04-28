@@ -1,5 +1,3 @@
-require_relative 'section'
-
 module LNCS
   class Proceedings
     attr_reader :sections

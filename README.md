@@ -6,9 +6,11 @@ The conventions enforced by `lncs` are intended to comply with the LNCS guidelin
 
 Installation
 ------------
+You'll need to install Ruby 1.9 or later. I recommend doing so via [rvm](https://rvm.io).
 
-    gem install lncs
-    lncs help
+You can then install `lncs` via Ruby gems: `gem install lncs`
+
+Get started with the `lncs` executable: `lncs help`
 
 Recommended workflow
 --------------------
@@ -176,4 +178,3 @@ Todo list:
 * Test loading classes without the executable (i.e. require "lncs" from irb)
 * Pick a license, add to repo and update gemspec
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)
-* Test on ruby 1.8

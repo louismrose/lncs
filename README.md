@@ -173,7 +173,7 @@ Contributing
 I'm afraid that this code is not well tested, factored or documented (yet). It was quickly hacked together whilst in my first attempt to edit an LNCS volume. If I'm ever asked to edit a second volume, I plan to tidy up this gem and add a few more features. In the meantime, psull requests are welcome.
 
 Todo list:
-* Test loading classes without the executable (i.e. require "lncs" from irb)
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)
 * Better error reporting when the titles key is specified but not authors and vice versa
 * Fix Markdown formatting in above code blocks
+* Quick test of the above workflow

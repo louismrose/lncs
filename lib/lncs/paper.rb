@@ -1,6 +1,7 @@
-require "tmpdir"
-require "pdf-reader"
-require "zip/zipfilesystem"
+require 'tmpdir'
+require 'pdf-reader'
+require 'zip/zipfilesystem'
+require 'lncs/actions'
 
 module LNCS
   class Paper

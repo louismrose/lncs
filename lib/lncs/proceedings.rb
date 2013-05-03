@@ -1,3 +1,5 @@
+require 'lncs/actions'
+
 module LNCS
   class Proceedings
     attr_accessor :manifest

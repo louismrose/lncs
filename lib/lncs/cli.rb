@@ -14,6 +14,7 @@ module LNCS
     def clean
       working_directories = %w{submissions body titles}
       working_directories.each {|d| remove_dir(d) }
+      create_file 'titles/index.tex'
     end
 
     desc "inspect", "Unpack the submissions so that their contents can be inspected manually"

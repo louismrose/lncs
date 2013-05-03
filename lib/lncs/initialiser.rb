@@ -15,6 +15,7 @@ module LNCS
         copy_file 'front_matter/organisation.tex'
         copy_file 'front_matter/preface.tex'
         copy_file 'front_matter/sponsors.tex'
+        create_file 'titles/index.tex'
       end
     end
   end

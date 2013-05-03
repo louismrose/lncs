@@ -170,7 +170,7 @@ Recommended workflow
 
 Contributing
 ------------
-I'm afraid that this code is not well tested, factored or documented (yet). It was quickly hacked together whilst in my first attempt to edit an LNCS volume. If I'm ever asked to edit a second volume, I plan to tidy up this gem and add a few more features. In the meantime, psull requests are welcome.
+I'm afraid that this code is not well tested, factored or documented. It was quickly hacked together whilst in my first attempt to edit an LNCS volume. If I'm ever asked to edit a second volume, I plan to tidy up this gem and add a few more features. In the meantime, pull requests are very welcome.
 
 Todo list:
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)

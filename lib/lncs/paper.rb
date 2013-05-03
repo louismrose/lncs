@@ -40,8 +40,7 @@ module LNCS
       captured += "\\clearpage\n"
       captured += "\\setcounter{page}{#{start_page + page_count}}"
     
-      FileUtils.mkdir_p(File.dirname(dst))
-      File.open(dst, 'w') {|f| f.write(captured) }
+      actions.create_file(dst, captured)
     end
   
     def copy_to(dst)
@@ -49,16 +48,20 @@ module LNCS
     
       if type == "zip"
         Zip::ZipFile.open(path) do |zipfile|
-          zipfile.each do |file|
-            FileUtils.mkdir_p(File.dirname(File.join(dst, file.name)))
-            zipfile.extract(file, File.join(dst, file.name))
+          zipfile.select { |file| zipfile.get_entry(file).file? }.each do |file|
+            actions.create_file(File.join(dst, file.name), zipfile.read(file))
           end
         end
       else
-        FileUtils.copy_file(path, File.join(dst, name))
+        actions.copy_file(path, File.join(dst, name))
       end
     end
   
+    def page_count
+      PDF::Reader.new(open_pdf).page_count
+    end
+  
+  private
     def open_pdf      
       if type == "zip"
         extracted_pdf = File.join(Dir.tmpdir, pdf)
@@ -71,11 +74,7 @@ module LNCS
         File.open(path, "rb")
       end
     end
-  
-    def page_count
-      PDF::Reader.new(open_pdf).page_count
-    end
-  
+    
     def authors_from_manifest_or_latex
       if authors
         authors.map do |a|
@@ -143,6 +142,10 @@ module LNCS
           end
         end
       end
+    end
+  
+    def actions
+      Actions.new
     end
   end
 end

@@ -36,10 +36,10 @@ module LNCS
         paper.generate_title_to(titles.last, start_page)
         start_page += paper.page_count
       end
-    
-      File.open("#{dst}/index.tex", 'a') do |f|
-        f.write("\\addtocmark{#{title}}\n")
-        f.write(titles.map {|title| "\\input{#{title}}\n"}.join)
+      
+      actions.append_file("#{dst}/index.tex") do
+        "\\addtocmark{#{title}}\n" +
+        titles.map {|title| "\\input{#{title}}\n"}.join
       end
     
       start_page
@@ -48,6 +48,11 @@ module LNCS
     def report
       puts title
       papers.each { |paper| puts "#{"%03d" % paper.id} -- #{paper.page_count}pgs #{paper.type}" }
+    end
+    
+  private
+    def actions
+      Actions.new
     end
   end
 end

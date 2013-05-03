@@ -52,6 +52,7 @@ module LNCS
 
     def generate_titles_to(dst)
       actions.remove_file("#{dst}/index.tex")
+      actions.create_file("#{dst}/index.tex")
       start_page = 1
       sections.each do |s|
         start_page = s.generate_titles_to(dst, start_page)

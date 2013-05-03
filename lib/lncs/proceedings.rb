@@ -51,7 +51,7 @@ module LNCS
     end
 
     def generate_titles_to(dst)
-      FileUtils.rm_rf("#{dst}/index.tex") if File.exists?("#{dst}/index.tex")
+      actions.remove_file("#{dst}/index.tex")
       start_page = 1
       sections.each do |s|
         start_page = s.generate_titles_to(dst, start_page)
@@ -60,6 +60,11 @@ module LNCS
 
     def report
       sections.each { |s| s.report }
+    end
+
+  private
+    def actions
+      Actions.new
     end
   end
 end

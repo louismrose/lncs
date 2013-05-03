@@ -23,7 +23,9 @@ module LNCS
     end
   
     def paper_path_for(paper_id)
-      File.join(source_directory, paper_file_name_for(paper_id))
+      filename = paper_file_name_for(paper_id)
+      raise "Error: no file with name ending '#{paper_id}.pdf' or '#{paper_id}.zip' found at path '#{source_directory}'" unless filename
+      File.join(source_directory, filename)
     end
   
     def paper_manifest_for(paper_id)

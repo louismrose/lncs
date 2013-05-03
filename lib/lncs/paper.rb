@@ -6,7 +6,7 @@ require 'lncs/actions'
 module LNCS
   class Paper
     attr_accessor :manifest, :path
-        
+    
     def pdf
       manifest["pdf"]
     end
@@ -32,7 +32,8 @@ module LNCS
     end
   
     def generate_title_to(dst, start_page)
-      raise "Cannot generate title from PDF for paper ##{id}" if type == "pdf"
+      raise "Error: Cannot generate title from PDF for paper ##{id}" if type == "pdf"
+      check_pdf_exists
     
       captured = title_page_from_manifest_or_latex
       captured += "\n" + authors_from_manifest_or_latex.map do |a| 
@@ -48,6 +49,8 @@ module LNCS
     end
   
     def copy_to(dst)
+      check_pdf_exists
+      
       FileUtils.mkdir_p(dst)
     
       if type == "zip"
@@ -62,10 +65,21 @@ module LNCS
     end
   
     def page_count
+      check_pdf_exists
+      
       PDF::Reader.new(open_pdf).page_count
     end
   
   private
+    def check_pdf_exists
+      raise "Error: no file found at path '#{path}'" unless File.exist?(path)
+      
+      if type == "zip"
+        pdf_exists = Zip::ZipFile.open(path) { |zipfile| zipfile.find_entry(pdf) }
+        raise "Error: no PDF file found at path '#{pdf}' within the ZIP file #{path}" unless pdf_exists  
+      end
+    end
+    
     def open_pdf      
       if type == "zip"
         extracted_pdf = File.join(Dir.tmpdir, pdf)

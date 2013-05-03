@@ -35,7 +35,10 @@ module LNCS
       raise "Cannot generate title from PDF for paper ##{id}" if type == "pdf"
     
       captured = title_page_from_manifest_or_latex
-      captured += "\n" + authors_from_manifest_or_latex.map{ |a| "\\index{#{a}}"}.join("\n") + "\n"
+      captured += "\n" + authors_from_manifest_or_latex.map do |a| 
+        a.gsub!(/(?<forename>\S*) (?<surname>.*)/, '\k<surname>, \k<forename>') if a   
+        "\\index{#{a}}"
+      end.join("\n") + "\n"
     
       captured += "\\maketitle\n"
       captured += "\\clearpage\n"
@@ -78,9 +81,7 @@ module LNCS
     
     def authors_from_manifest_or_latex
       if authors
-        authors.map do |a|
-          a.gsub(/(?<forename>\S*) (?<surname>.*)/, '\k<surname>, \k<forename>')
-        end
+        authors
       else
         regex = %r{
           \\author(?<re>
@@ -102,7 +103,6 @@ module LNCS
           author_tag.gsub! /\\inst\{[^\}]*?\}/, ''         # strip institutions
           author_tag.split('\and').map do |a|
             a.strip!
-            a.gsub(/(?<forename>\S*) (?<surname>.*)/, '\k<surname>, \k<forename>')
           end
         else
           []

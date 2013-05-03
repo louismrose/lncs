@@ -1,23 +1,18 @@
 module LNCS
   class Section
-    attr_reader :papers
+    attr_accessor :manifest, :proceedings
   
-    def initialize(section, source_directory, papers)
-      @papers = []
-      @title = section["title"]
-    
-      Dir.chdir(source_directory) do
-        section["papers"].each do |paper_id|
-          Dir.glob("*_#{paper_id}.{pdf,zip}") do |file|
-            path = File.join(source_directory, file)
-          
-            paper = papers.fetch(paper_id.to_s, {})
-            paper["pdf"] = file unless paper["pdf"]
-          
-            @papers << Paper.new(path, paper)
-          end
+    def papers
+      manifest["papers"].map do |paper_id|      
+        Paper.new.tap do |p|
+          p.manifest = proceedings.paper_manifest_for(paper_id)
+          p.path = proceedings.paper_path_for(paper_id)
         end
       end
+    end
+    
+    def title
+      manifest["title"]
     end
   
     def copy_to(dst)
@@ -43,7 +38,7 @@ module LNCS
       end
     
       File.open("#{dst}/index.tex", 'a') do |f|
-        f.write("\\addtocmark{#{@title}}\n")
+        f.write("\\addtocmark{#{title}}\n")
         f.write(titles.map {|title| "\\input{#{title}}\n"}.join)
       end
     
@@ -51,7 +46,7 @@ module LNCS
     end
   
     def report
-      puts @title
+      puts title
       papers.each { |paper| puts "#{"%03d" % paper.id} -- #{paper.page_count}pgs #{paper.type}" }
     end
   end

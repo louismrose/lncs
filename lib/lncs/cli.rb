@@ -47,7 +47,9 @@ private
     
     def proceedings
       manifest_missing unless File.exist?("manifest.json")
-      Proceedings.new(JSON.parse(File.read("manifest.json")))
+      Proceedings.new.tap do |p|
+        p.manifest = JSON.parse(File.read("manifest.json"))
+      end
     end
     
     def manifest_missing

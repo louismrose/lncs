@@ -174,7 +174,6 @@ I'm afraid that this code is not well tested, factored or documented (yet). It w
 
 Todo list:
 * Port to Thor actions
-    * latest wip seems to be causing a stack trace :/
     * It might be better to slice the program differently: separate the data from the actions; make each action (e.g. body, toc, etc) a descendant of Thor class...
 * Test loading classes without the executable (i.e. require "lncs" from irb)
 * Better error reporting when the papers pdf key is incorrect (and a fiel doesn't exist)

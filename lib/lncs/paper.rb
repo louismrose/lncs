@@ -4,15 +4,22 @@ require "zip/zipfilesystem"
 
 module LNCS
   class Paper
-    def initialize(path, paper)
-      @path = path
-      @pdf = paper["pdf"]
-      @title = paper["title"]
-      @authors = paper["authors"]
+    attr_accessor :manifest, :path
+        
+    def pdf
+      manifest["pdf"]
+    end
+    
+    def title
+      manifest["title"]
+    end
+    
+    def authors
+      manifest["authors"]
     end
   
     def name
-      File.basename(@path)
+      File.basename(path)
     end
   
     def id
@@ -26,8 +33,8 @@ module LNCS
     def generate_title_to(dst, start_page)
       raise "Cannot generate title from PDF for paper ##{id}" if type == "pdf"
     
-      captured = title_page
-      captured += "\n" + authors.map{ |a| "\\index{#{a}}"}.join("\n") + "\n"
+      captured = title_page_from_manifest_or_latex
+      captured += "\n" + authors_from_manifest_or_latex.map{ |a| "\\index{#{a}}"}.join("\n") + "\n"
     
       captured += "\\maketitle\n"
       captured += "\\clearpage\n"
@@ -41,39 +48,37 @@ module LNCS
       FileUtils.mkdir_p(dst)
     
       if type == "zip"
-        Zip::ZipFile.open(@path) do |zipfile|
+        Zip::ZipFile.open(path) do |zipfile|
           zipfile.each do |file|
             FileUtils.mkdir_p(File.dirname(File.join(dst, file.name)))
             zipfile.extract(file, File.join(dst, file.name))
           end
         end
       else
-        FileUtils.copy_file(@path, File.join(dst, name))
+        FileUtils.copy_file(path, File.join(dst, name))
       end
-    
-      @copied = dst
     end
   
-    def pdf
+    def open_pdf      
       if type == "zip"
-        extracted_pdf = File.join(Dir.tmpdir, @pdf)
-        Zip::ZipFile.open(@path) do |zipfile|
+        extracted_pdf = File.join(Dir.tmpdir, pdf)
+        Zip::ZipFile.open(path) do |zipfile|
           FileUtils.mkdir_p(File.dirname(extracted_pdf))
-          zipfile.extract(@pdf, extracted_pdf) { true }
+          zipfile.extract(pdf, extracted_pdf) { true }
         end
         File.open(extracted_pdf, "rb")
       else
-        File.open(@path, "rb")
+        File.open(path, "rb")
       end
     end
   
     def page_count
-      PDF::Reader.new(pdf).page_count
+      PDF::Reader.new(open_pdf).page_count
     end
   
-    def authors
-      if @authors
-        @authors.map do |a|
+    def authors_from_manifest_or_latex
+      if authors
+        authors.map do |a|
           a.gsub(/(?<forename>\S*) (?<surname>.*)/, '\k<surname>, \k<forename>')
         end
       else
@@ -89,6 +94,7 @@ module LNCS
           )
         }x
       
+        title_page = title_page_from_manifest_or_latex
         if regex.match(title_page)
           author_tag = regex.match(title_page)[1]
           author_tag = author_tag[1..-2]                  # strip starting and closing bracket
@@ -104,11 +110,11 @@ module LNCS
       end
     end
   
-    def title_page
-      if @title
+    def title_page_from_manifest_or_latex
+      if title
   """
-  \\title{#{@title}}\n
-  \\author{#{@authors.join(" \\and ")}}\n
+  \\title{#{title}}\n
+  \\author{#{authors_from_manifest_or_latex.join(" \\and ")}}\n
   """
       else
         captured = ""
@@ -126,7 +132,7 @@ module LNCS
   
     def each_tex
       if type == "zip"
-        Zip::ZipFile.open(@path) do |zipfile|
+        Zip::ZipFile.open(path) do |zipfile|
           zipfile.each do |file|
             if file.name.end_with? "tex" and not file.name.end_with? "llncs.tex"
               extracted_tex = File.join(Dir.tmpdir, file.name)

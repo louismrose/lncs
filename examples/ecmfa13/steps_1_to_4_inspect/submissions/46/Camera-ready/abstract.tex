@@ -1,0 +1,26 @@
+Model typing brings the benefit associated with well-defined type systems to model-driven development (MDD) through the assignment of specific types to models. 
+In particular, model type systems enable reuse of model manipulation operations (e.g., model transformations), where manipulations defined for models typed by a supertype can be used to manipulate models typed by subtypes. 
+Existing model typing approaches are limited to structural typing defined in terms of object-oriented metamodels (e.g., MOF), in which the only structural (well-formedness) constraints are those that can be expressed directly in metamodeling notations (e.g., multiplicity and element containment constraints).
+In this paper we describe an extension to model typing that takes into consideration structural invariants, other than those that can be expressed directly in a metamodeling notation, and specifications of behaviors associated with model types. 
+The approach supports contract-aware substitutability, where contracts are defined in terms of invariants and pre-/post-conditions expressed using OCL. 
+Support for behavioral typing paves the way for behavioral substitutability.
+We also describe a technique to rigorously reason about model type substitutability as supported by contracts, and apply the technique in a usage scenario from the optimizing compiler community.
+
+
+\begin{comment}
+Model typing extends the applicability of typing to model-oriented type
+system by assigning models with specific types. It provides support for
+model substitutability addressing a wide range of facilities such as model
+transformation reuse. While existing approaches are limited to
+object-oriented metamodels (e.g., MOF) as types, there is a need for
+exploring more precise types. In particular, we propose in this paper an
+extension to model typing that takes into account contract-aware
+substitutability where contracts are defined in terms of invariants and
+pre-/postconditions expressed using OCL. While invariants offer a suitable
+way to complete object-oriented metamodels with additional structural
+properties, pre-/postconditions pave the way of behavioral
+substitutability for model transformation specialization. We also provide
+an implementation to rigorously reason about the substitutability on model
+types with contracts and apply it on use cases coming from the optimizing
+compiler community.
+\end{comment}

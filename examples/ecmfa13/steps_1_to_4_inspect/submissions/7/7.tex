@@ -1,0 +1,338 @@
+\documentclass{llncs}
+
+\usepackage{latexsym,rotating}
+\usepackage{theorem,xspace,ifthen,graphicx,url}
+
+\input{ComparisonTable.tex}
+\input{Guillemets.tex}
+\input{Figures.tex}
+\input{Text.tex}
+\newcommand{\MMQ}{MOCQL\xspace}
+
+ \setlength{\abovecaptionskip}{1ex}
+ \setlength{\belowcaptionskip}{1ex}
+ \setlength{\floatsep}{1ex}
+ \setlength{\textfloatsep}{1ex}
+ 
+\title{\MMQ: A Declarative Language for\\Ad-Hoc Model Querying}
+\author{Harald St\"orrle}
+\institute{Institute of Applied Mathematics and Computer Science\\Technical University of Denmark\\ \texttt{hsto@dtu.dk}}
+
+\begin{document}
+
+\thispagestyle{empty}\maketitle
+
+\begin{abstract} 
+This paper starts from the observation that existing model query facilities are not easy to use, and are thus not suitable for users without substantial IT/Computer Science background. In an attempt to highlight this issue and explore alternatives, we have created the Model Constraint and Query Language (\MMQ), an experimental declarative textual language to express queries (and constraints) on models. We introduce \MMQ by examples and its grammar, evaluate its usability by means of controlled experiments, and find that modelers perform better and experience less cognitive load when working with \MMQ than when working with OCL. While \MMQ is currently only implemented and validated for the different notations defined by UML, its concepts should be universally applicable.\\
+\textbf{Keywords:} OCL, UML, model querying, empirical software engineering, Prolog
+\end{abstract}
+
+
+\section{Introduction}
+
+\subsection{Motivation}
+
+Many software development approaches today use models instead of or alongside with code for different purposes, e.\ g., model based and model driven development, Domain-Specific Languages (DSLs), and Business process management. As a consequence, tasks such as version and configuration management, consistency checking, transformations, and querying of models are much more common today than they used to be. Unfortunately, these and other tasks are not well covered in current CASE tools. But from practical experience we have learned that modelers dearly need, among others, an ad-hoc query facility covering more than just full text search and a fixed set of predefined queries. The natural choice of language when it comes to selecting a powerful general-purpose model querying language is the Object Constraint Language (OCL \cite{ocl231}), at least for UML and similar languages. However, OCL is often perceived as too complex for many modelers, let alone domain experts without formal training in Computer Science. So, the goal of this paper is to try and come up with better solutions to this problem. In order to achieve high levels of accessibility, we are prepared to even sacrifice a certain degree of theoretical expressiveness, as long as the practically relevant cases are covered. Aspects other than usability are beyond the scope of this paper.
+
+
+\subsection{Approach}\label{sec:Approach}
+
+Our first approach to improving the usability of model query languages was based on the commonly held assumption that visual languages are generally easier to understand than textual languages. Since OCL is a purely textual language, a visual language might perform better. Following this assumption, we defined a predominantly visual alternative to OCL, the  Visual Model Query Language (VMQL \cite{stoerrle:mq3:vlhcc09}). We could indeed demonstrate that VMQL is easier to use than OCL \cite{stoerrle:mq3b:jvlc}, while being applicable to the same kinds of tasks OCL is targeted at (i.e., both for querying and expressing constraints, see \cite{stoerrle:mq4b:expressing:vlhcc} for the latter). 
+
+During these research projects, however, we also found evidence that the visual nature of VMQL is only one of several factors contributing to its usability, and quite possibly not the largest one. In order to pursue this lead, and building on the lessons learned in the design of VMQL, we invented a new textual language on the fly. To our surprise, this improvised language was even more effective than VMQL, and was preferred by users when given a choice. Thus, we refined and elaborated this language which has now evolved into the Model Constraint and Query Language (abbreviated to \MMQ, pronounce as ``mockle''). 
+
+The design of \MMQ is informed by the lessons learned during the design of VMQL, and they share conceptual and implementation element, yet \MMQ is a genuinely new language. Our working hypothesis is that \MMQ offers better usability than both OCL and VMQL. \MMQ is not conceptually restricted to UML, but the current implementation and validation have so far only covered this notation. Thus, while we believe that \MMQ is suitable as a \emph{universal} model query language, no such claim will be raised here. Also, we envision using \MMQ on model repositories such as CDO, EMFStore, Morsa, and ModelBus.\footnote{See \url{www.eclipse.org/cdo}, \url{www.emfstore.org}, \url{www.modelum.es/morsa}, and \url{www.modelbus.org}, respectively.} However, this has not yet been attempted.
+
+In the remainder of this paper, we will first introduce \MMQ by example, showing how it may be used to query models in a concise and modeler-friendly way. We provide a (simplified) grammar for \MMQ, informally describe its semantics, and briefly report on its implementation. Then, we report on two controlled experiments to assess the relative effectiveness of OCL, VMQL, and \MMQ from a user's point of view. We conclude by comparing \MMQ with existing approaches, highlighting the contributions, and outlining ongoing research.
+
+
+\section{Introducing \MMQ}\label{sec:Syntax}
+
+We will now show some examples of \MMQ queries. In order to explain their meaning, we also present OCL queries with the same effect. Note that no formal relationship between \MMQ and OCL exists, in particular, there is no automatic translation between these languages. All queries are assumed to be executed on the models shown in \FFF{SampleModels}. For simplicity, we shall assume that \FFF{SampleModels} shows two models M1 and M2, the former of which is completely covered by diagram M1, and the latter is completely covered by the diagrams M2a and M2b. 
+
+\FG{SampleModels}{The sample models used as the base model for all queries described in this paper.}
+
+Suppose, a modeler is looking for all classes whose name ends with ``Address'' in model M1. On the given sample model, the result would be the set of the two classes named ``Address'' and ``MailAddress''. Such a simple query would probably be best answered by using whatever search facility any given modeling tool provides; most tools allow specifying the meta-class of the search target and pattern matching for names. Using OCL, the query might look something like the following.
+
+\begin{verbatim}
+(1a)   Class.allInstances()
+          -> select(c | c.name.contains_substring("Address")).
+\end{verbatim}
+
+Here, we assume an OCL-function \texttt{contains\_substring}. Such a function is not part of the OCL or UML standards \cite{ocl231,uml24beta}, but it could probably be programmed and thus be available in some hypothetical OCL Query Library. In \MMQ, this query can be expressed in a very natural way:
+
+\begin{verbatim}
+(1b)   find all classes $X named like "*Address" in M1.
+\end{verbatim}
+
+\noindent Understanding this query requires much less knowledge about the UML meta model than the corresponding OCL expression, which makes it more readily understood by modelers (as we shall show below). Also, this expression is easy to modify and extend, e.g., we want to add the constraint that the classes we look for are abstract. In OCL, this could be expressed by query (2a).
+
+\begin{verbatim}
+(2a)   Class.allInstances()
+          -> select(c | c.name.contains_substring("Address") 
+                        && c.isAbstract = true).
+\end{verbatim}
+
+\noindent Compare this with the corresponding \MMQ query (2b), which we believe is significantly clearer, and easier to understand.
+
+\begin{verbatim}
+(2b)   find all abstract classes $X named like "*Address" in M1.
+\end{verbatim}
+
+Suppose we were to look for abstract classes that do not have subclasses. The typical built-in search facilities of most modeling tools would not support such a query. In OCL, we would have to write something like the following.
+
+\begin{verbatim}
+(3a)   Class.allInstances()
+           ->select(c | c.isAbstract=true).
+                   intersection(c | c.general->isEmpty())
+\end{verbatim}
+
+\noindent Even more understanding of fine details of the UML meta model are required here (e.g., the property ``general''), and knowledge of the different navigational operators in OCL (i.e., the dot vs.\ the arrow), which at least many students struggle with. In \MMQ, we can instead write
+
+\begin{verbatim}
+(3b)    find all abstract classes $X in M1 where
+              there are no classes $Y such that $X generalizes $Y
+\end{verbatim}
+
+\noindent which was created from the first \MMQ query. This expression just requires to know the name ``Generalization'' for the relevant UML relationship. Thus, less knowledge about the UML meta model is required when using \MMQ as compared to when using OCL. Together with its user friendly syntax, \MMQ also allows domain experts to query models in a straightforward way. 
+
+Let us now turn to model M2. Assume, a modeler wants to find out all the actors involved in a given use case named ``edit address data''. In \MMQ, the following query would achieve this goal, returning the actors ``Customer'' and ``Account Manager''.
+
+\begin{verbatim}
+(4)    find all actors $X where $X is associated to $Y and 
+              there is a useCase $Y named "edit address data".
+\end{verbatim}
+
+\noindent The way associations are represented in the UML meta-model would make this a rather complex query were we to express it in OCL. Observe, that elements of the UML meta model (i.e., meta classes and meta attributes) are not part of the \MMQ syntax. They are treated as strings and passed on ``as is'' to the query execution procedures.
+
+\MMQ offers capabilities for all kinds of models occurring in UML, including use case models, state machine models, and activities. Suppose, for instance, we are looking for activities that contain Actions unconnected to the initial node. In \MMQ, this could be expressed by query (5).
+
+\begin{verbatim}
+(5)   find all actions $Unconnected in M3 such that 
+             there is no initialNode $Initial such that 
+                   $Initial precedes $Unconnected transitively.
+\end{verbatim}
+
+Finally, suppose we want to query two models simultaneously, to find elements that have the same name. In \MMQ, this can easily be achieved by query (6).
+
+\begin{verbatim}
+(6)   find all $X1 named $NAME in M1 such that
+               there is $X2 named $NAME in M2.
+\end{verbatim}
+
+Relaxing the query to check for similar names rather than exact matches only requires to add \texttt{like} before the second occurrence of \verb!$NAME!. An EBNF grammar of \MMQ is shown in \FFF{MOCQLGrammar}. This grammar has been simplified for purposes of presentation.
+
+\FG{MOCQLGrammar}{Simplified EBNF grammar of \MMQ.}
+
+
+
+\section{Semantics}
+
+The semantics of \MMQ consists of two parts. On the one hand, there is a particular model representation that facilitates the operations involved in the query execution, storing models as Prolog knowledge bases. On the other hand, there is a mechanical translation of \MMQ queries into Prolog programs that are then executed on the knowledge base, utilizing a set of predefined Prolog predicates.
+
+
+\subsection{Model representation}\label{sec:ModelRepresentation}
+
+The model representation we use for \MMQ has been used for implementing VMLQ \cite{stoerrle:mq3b:jvlc}, and a set of other advanced operations on models such as clone detection \cite{stoerrle:mc1b:jsosym}, or difference computation \cite{stoerrle:mvc4:presentation}. In this representation, models are looked at as knowledge bases, and individual model elements are considered facts that are stored in a Prolog data base. Queries and other operations on models are implemented as Prolog predicates over this knowledge base, i.e., queries are translated into Prolog predicates by a definite clause grammar (DCG, a kind of Prolog program). Those query predicates are then simply executed, calling a small library of predefined search functions. This greatly simplifies the implementation, while making it easy to extend and experiment with, which is the main design objective at this stage of the development of \MMQ.
+
+First, the user creates source models, exports them to an XMI file, and transforms it into a Prolog database. Each model element is transformed to one Prolog clause of the predicate \texttt{me}, see \FFF{SampleModelPL} for an example (edited for improved readability). The first argument of each \texttt{me}-fact is a pair of type and internal identifier (usually an integer). The second argument is a property list of tags for meta-attributes and their values. References to identifiers are marked with an \texttt{id} or \texttt{ids}-term.
+
+\FG{SampleModelPL}{Example for the Prolog representation of sample model M1.}
+
+This conversion has several advantages over XMI. On the one hand, it is much more compact than XMI, which also speeds up processing of models. In particular, with the given representation, we are able to keep even very large models in-memory all the time, which is not always the case for the typical data structures for processing XML-files. On the other hand, it is very easy to access models represented in this way by using the Prolog command line interface, or to exchange code operating on models while keeping the model loaded, which is a tremendous help during development. Finally, the representation is generic enough to allow for all kinds of models, including those that do not have a MOF-like meta meta model.
+
+Moreover, observe that the conversion takes only a few milliseconds, and is fully reversible: It neither adds nor removes anything, it merely changes the model representation. The conversion is triggered automatically when trying to access an XMI file in a \MMQ query, so it is completely transparent to the user.
+
+
+\subsection{Query translation}\label{sec:QueryTranslation}
+
+The second part of the semantics is the translation of queries into executable Prolog code. Executing the queries amounts to executing this code. Let us again consider the introductory examples from Section~\ref{sec:Syntax} in order to see how these are interpreted. In the first step, the query is parsed, creating an abstract syntax tree. This step reduces the syntactic sugar, i.e., it reduces plural expressions to singular, and converts syntactic alternatives into a single expression. For instance, the expression
+
+\begin{verbatim}
+(1b)   find all classes $X named like "*Address" in M1.
+\end{verbatim}
+
+results in the parse tree shown in \FFF{ParseTree1}. This expression is then translated into the following sequence of Prolog predicates.
+
+\begin{verbatim}
+all( 'M1', [X], [type(class), is_like(name, '*Address')]),
+show('M1', [X]).
+\end{verbatim}
+
+\FG{ParseTree1}{The abstract syntax tree resulting from parsing and simplifying query (1b).}
+
+The predicates \texttt{all} and \texttt{show} are defined accordingly, so that executing this Prolog program actually executes the query. The atomic value \texttt{M1} refers to the name of the model to be queried, the list \texttt{[X]} is the list of all variables occurring in the expression. 
+
+Similarly, the third query example from Section~\ref{sec:Syntax} is translated, so that
+
+\begin{verbatim}
+(3b)   find all abstract classes $X in M1 such that 
+             there are no classes $Y where $X generalizes $Y
+\end{verbatim}
+
+\noindent becomes
+
+\begin{verbatim}
+all( 'M1', [X],    [type(class), is(isAbstract,true) ]),
+none('M1', [X, Y], [type(class), generalizes(X,Y)    ]),
+show('M1', [X]).
+\end{verbatim}
+
+As before, \texttt{none} is a predicate defined as part of \MMQ, so that executing this program simply executes the query. Observe that Prolog variables (i.e., \texttt{X} and \texttt{Y}) are \emph{logical} variables, that is, they are unified rather than containers with assigned values. Thus, the sequence of the first two clauses of this program does not change the result. It does change the execution behavior, though, in particular the required computational resources.
+
+
+\section{Implementation}
+
+\FFF{MOCQL-Architecture2} shows the overall architecture of \MMQ. Processing queries is done in three steps. First, the base model is transformed from an XMI file to the Prolog transformation described in in \SSS{ModelRepresentation} above. Observe that this transformation is purely syntactical and typically too fast for the user to notice. Then, query expressions are transformed into Prolog predicates as shown in \SSS{QueryTranslation}, which refer to the predicates defined in the Model Querying Library. Finally, this predicate is then executed. 
+
+\MMQ shares the Model Querying Library with previous research including VMQL, but is otherwise independent. Future extensions of \MMQ to allow querying of other modeling languages such as BPMN would require some changes to this implementation. In particular, a new translator from the source model format into the Prolog format would be required, and some amendments the \MMQ grammar to cover new language concepts, i.e., the non-terminals \texttt{TYPE}, \texttt{ATTR}, and \texttt{REL\_OP\_AKT}. Whether amendments to the Model Querying Library would be necessary, is unclear. Thus, extending the scope of \MMQ to other modeling languages beyond UML is closer to porting a programming language to a new processor architecture than creating a new programming language.
+
+\FG{MOCQL-Architecture2}{Architecture of \MMQ: the Model Querying Library is shared with previous research, including VMQL.}
+
+
+
+\section{Usability evaluation}
+
+In this section we evaluate \MMQ. We focus on usability, reporting two controlled experiments that study and compare the usability of VMQL, OCL, and \MMQ, respectively. At the end of this section, we briefly discuss other qualities.
+
+\subsection{Experiment design}
+
+Both experiments used the same randomized block design, but tested different sets of languages: OCL vs.\ \MMQ, and VMQL vs.\ \MMQ, respectively. The experimental setup consisted of four parts asking for (A) demographic data, (B) finding query expressions matching an English description, (C) checking the match between a given query expression and its English description, and (D) asking for subjective judgments regarding the languages tested. Task B contained 28 subtasks while Task C contained 12 subtasks. 
+
+In each of the experiments, 17 subjects participated, most of them being graduate students, but also including six IT professionals and a researcher. Different sequences of tasks were randomly assigned to them in order to control learning effects and bias. Our study was blinded by naming the languages A, B, and C, respectively. Going by the self-assessment in the demographic part of the questionnaire (Task A), the participants had little knowledge of either of the tested languages. The participants of the second experiment were recruited from the ``Elite SE study line'', an educational program that admits only students of very high aptitude.
+
+We controlled the variables language (OCL, VMQL, \MMQ), query expression, and task, and recorded the correctness of the answers, the time taken, and  the subjective assessment. The latter was divided into three different measures asking for preference, effort, and confidence in the result. The experiment was run as a pen-and-paper exercise. Participants were offered to talk about the experience or comment on the questionnaire, an opportunity some of them took. 
+
+
+
+\subsection{Observations}
+
+We first discuss the objective measure of the number of correct answers given by the subjects. We have normalized the absolute numbers to percentages. A perfect score would reveal the same frequency for each language. \TTT{scores} shows the observations, \FFF{Scores} visualizes them.
+
+Clearly, subjects perform better on both tasks under the treatment \MMQ than under the treatment OCL. In fact, several subjects complained about OCL in follow-up interviews or comments on the questionnaire margins. In the second experiment, we see that subjects perform better using \MMQ than VMQL with what appears to be a smaller margin. Observe that there is a variation in the scores for \MMQ between the two experiments, which we explain by variations in the subject populations, i.e., participants of Experiment 2 can be expected to have a far beyond average general intelligence. The relative difficulty between the two tasks is consistent across both experiments, further confirming the validity of our findings.
+
+Let us now turn to the subjective assessments. Participants were asked to record their subjective assessment on a 5-point Likert scale which we normed to the interval 0..10 for easier presentation. Since these are subjective measures anyway, we combined the results from both experiments in this presentation. \TTT{load} shows the observations, \FFF{Load} visualizes them. 
+
+\Table{
+\begin{tabular}{|c||r|r||r|r|}
+\hline
+              & \HDn{2}{Experiment 1}     & \HDl{2}{Experiment 2}     \\
+\HAS{1}{20mm}{Language} & \HASl{1}{23mm}{Task B} & \HAS{1}{23mm}{Task C} &  \HASl{1}{23mm}{Task B} & \HASl{1}{23mm}{Task C}  \\ \hline
+\hline
+\HD{\MMQ}     &      82.1\% &      58.7\% &     83.9\% &      62.7\%    \\ \hline      
+\HD{VMQL}     &           - &           - &     74.2\% &      49.0\%    \\ \hline
+\HD{OCL}      &      54.8\% &      38.1\% &          - &           -    \\ \hline 
+%\HD{OCL+}    &           - &           - &     xx.x\% &      xx.x\%     \\ \hline 
+\end{tabular}
+}{Performance of subjects in tasks B and C.}{scores}
+
+\FG{Scores}{Performance of subjects in tasks B and C: visualization of the data in \TTT{scores}.}
+
+
+All three measures consistently show the same trend of OCL scoring lower than VMQL, which in turn scores lower than \MMQ. As before, there is a larger difference between OCL and VMQL, than there is between \MMQ and VMQL. We see that the ratings for ``Understandability'' and ``Confidence'' are particularly low for OCL, which is consistent with the post-experimental remarks by participants.
+
+
+
+\subsection{Validity}
+
+With 34 participants, three different tasks, and 28/12/3 different measurements within each task, we have a fairly large sample size. Due to the study design, we can safely exclude bias through learning effects or variations in the subject population. All results are consistent with each other, with only the minor fluctuations between experiments that are to be expected in any kind of human factor study.
+
+\Table{
+\begin{tabular}{|c||r|r||r|r||r|r|}
+\hline
+{}            &    \HDn{2}{Understandability} &          \HDn{2}{Effort}  &       \HDl{2}{Confidence} \\                    % &       \HDl{2}{Writability} \\ 
+\HAS{1}{20mm}{Language}  &   \MEAN{15mm} &   \SDEV{15mm} & \MEAN{15mm} & \SDEV{15mm} & \MEAN{15mm} & \SDEV{15mm} \\ \hline
+\hline
+\HD{\MMQ}     &           8.0 &         1.88  &         6.2 &        3.38 &         8.5 &       2.20 \\ \hline              % 8.4  & 2.43
+\HD{VMQL}     &           7.0 &         2.28  &         7.5 &        3.30 &         7.7 &       2.90 \\ \hline              % 8.93 & 2.8
+\HD{OCL}      &           3.8 &         1.80  &         8.8 &        1.78 &         3.3 &       1.55 \\ \hline              % 
+%\HD{OCL+}    &           7.0 &               &         7.5 &             &         7.7 &            \\ \hline              % 5.53 & 2.53
+\end{tabular}
+}{Subjective assessment of cognitive load.}{load}
+
+\FG{Load}{Subjective assessment of cognitive load (averages across all subjects, normalized to the interval 0 (lowest) to 10 (highest).}
+
+
+Obviously, the task presentation would influence the outcome: since \MMQ tries to imitate a natural language in its concrete syntax, there is high degree of proximity to the task description, that is provided in written English, biasing the result in favor of \MMQ. However, we stipulate that describing a query in plain English is exactly what a modeler does when faced with a search task. Allowing him or her to express queries that way is, thus, not an undue influence on the experiment. Quite contrary, that is exactly the point of \MMQ.
+
+A potential threat to validity is the fact that we did not test the respective whole languages, that is, there are parts of OCL, VMQL, and \MMQ that have not been subjected to experimental validation of their usability. In that sense, the validity of inferences regarding the languages as such is limited. Due to the conceptual differences between the languages, however, it would be difficult to completely compare them.
+
+One might also object that the subjects---students---are not representative for the audience \MMQ is targeted at, i.e., people with little or no UML knowledge. In fact, the participants of Experiment 2 have been tested after they had just completed a one-term intensive course on UML, MDA, and OCL. However, even that degree of UML/OCL knowledge and additional cues and auxiliary high-level functions did not lead to an improved performance on the OCL tasks. 
+
+Finally, we have used different measurements to capture aspects of cognitive load (cf.\ \cite{paas:etal:2003cognitive}), yielding consistent results. Subjective assessments of cognitive load have been found to be very reliable indicators of the objective difficulty of a task (cf.\ \cite{gopher:braune:psychophysics}).
+
+
+\subsection{Inferences}
+
+We tested the hypothesis that subjects performed better using OCL than \MMQ in Experiment 1. Using a binomial test in the R environment \cite{r}, we can reject this hypothesis with high certainty ($p<10^{-7}$ for task B, and $p<10^{-5}$ for task C). Similarly, we can reject the hypothesis that subjects performed better using VMQL than \MMQ in Experiment 2, though there is not necessarily a significant result for task C ($p=0.0033$ for task B, and $p=0.059$ for task C).
+
+\Table{
+\begin{tabular}{|l||c|l@{\hspace{1mm}}l|}
+\hline
+\HD{Hypothesis}                              & \HAS{1}{15mm}{Task} &    \HASl{2}{28mm}{Significance} \\ \hline
+\hline
+Experiment 1:                                &         B & $p<10^{-7}$ &               *** \\ 
+Subjects perform better using OCL than \MMQ  &         C & $p<10^{-5}$ &               *** \\ \hline
+Experiment 2                                 &         B & $p=0.0033$  &                 * \\ 
+Subjects perform better using VMQL than \MMQ &         C & $p=0.059$   &           $\cdot$ \\ \hline
+\end{tabular}
+}{Testing Hypothesis with the Binomial test.}{Tests}
+
+
+\subsection{Interpretation and conclusions}
+
+It is obvious that OCL offers little to modelers when it comes to querying models, and our investigation establishes the consequences as a fact. In previous research \cite{stoerrle:mq3b:jvlc}, we have shown how users performs better using VMQL than OCL, over a range of tasks. The current results show that user perform better using \MMQ than both OCL and VMQL. Both in our previous research and the current results, users also show a much higher acceptance (and thus, motivation), for \MMQ and VMQL than they exhibit for OCL, consistently across different task types, many different queries, and different measurements, which all consistently point in the same direction. Our results are mostly significant, some of them to the extreme. Our study exhibits a high degree of validity.
+
+We have thus provided substantial evidence in support of our initial working hypothesis that \MMQ offers better usability than both OCL and VMQL, as outlined in Section~\ref{sec:Approach}. We believe it is safe to assume, that these results are generalizable to other contexts, such as different subject populations or different queries. Also, we expect these findings to carry over to extensions of \MMQ that have not yet been tested.
+
+
+\section{Related Work}\label{sec:relatedWork}
+
+There are essentially three kinds of query facilities. First, there are basic tools like full text search and sets of predefined queries. These sacrifice expressiveness for usability, leaving modelers with little leverage. On the other end of the spectrum, there are application programming interfaces of modeling tools, which offer maximum expressiveness to the modeler, but require substantial expertise which only few modelers possess. Certainly, domain experts, which are in the focal point of our work, lack this capability.
+
+Between these two extremes, there are model query languages varying along different dimensions.
+One the one hand, there is of course OCL \cite{ocl231} as the most widely used model query language. OCL also seems to be the only generically applicable textual model query language (disregarding non-semantic facilities such SQL, XPath, and similar). As our studies clearly show, OCL is not suited for ad-hoc querying by domain experts. In fact, even highly trained professionals and top-notch students with substantial training in OCL have serious trouble using it.
+
+On the other hand, there are the visual model query languages like QM \cite{stein:etal:query,stein:etal:graphical:lncs}, BP-QL \cite{Beeri:etal:2006:bpql}, BPMQ \cite{awad:etal:2008:bpmq,awad:diss}, Visual OCL \cite{bottoni:etal:consistency,bottoni:etal:visualisation}, and VMQL \cite{stoerrle:mq3:vlhcc09,stoerrle:mq3b:jvlc,stoerrle:mq4b:expressing:vlhcc} (see \cite{stoerrle:mq3b:jvlc} for a detailed comparison). These come with the explicit or implicit promise of higher usability, exploiting the fact that most modeling notations are also visual, and it is intuitively appealing to express queries the same way as base models. However, little evidence has been published to support this intuition; only VMQL seems to have been evaluated from this angle. From the results presented above and in previous studies, respectively, it is clear that OCL performs poorly, and that both \MMQ and VMQL perform better than OCL. Surprisingly, though, \MMQ even surpasses VMQL with respect to usability. This contradicts the common intuition about textual vs.\ visual notations and demands further inquiry.
+
+We expect Visual OCL to perform similar to OCL since it is just a visualization of OCL; the other visual model query languages should yield results similar to those of VMQL since they are based on a similar paradigm and in some cases offer similar solutions (e.g., the treatment of transitive edges in BP-QL and QM, or negation in BP-QL).
+
+Most model query languages are restricted to express queries on a single notation or a small set of related notations. For instance BPMN-Q addresses BPMN and (to some degree) EPCs, QM address a subset of UML class and sequence diagrams, and CM address only elementary class diagrams. On the other hand, OCL and Visual OCL apply to all MOF-based notations; VMQL and \MMQ even go beyond that requirement.
+
+There are large differences with respect to the tool support a modeler might obtain for the model query languages mentioned. Only for OCL is there a choice of quality tools from different sources. Most of the other tools have been implemented as academic prototypes only, or not even that (e.g., CD and QM).
+
+OCL (and, potentially, Visual OCL) offer maximum expressiveness through defining recursive functions. Most other model query languages mentioned above seem to have been analyzed from this perspective. VMQL does do not offer user-defined recursive functions, and is thus less expressive than OCL, though the exact degree of expressiveness is currently unknown. Similarly, \MMQ does not allow the definition of recursive functions, but it should be not too difficult to add such a feature. Observe also, that \MMQ provides features that are relevant for practical model querying, but currently missing in OCL, such as using wild-card expressions, executing queries across several models, type variables, or access to model element identifiers.
+
+
+\section{Discussion}
+
+\subsection{Summary}
+
+In this paper we have introduced the Model Query and Constraint Language (\MMQ), by means of example and a (simplified) grammar. We report on user studies comparing OCL, VMQL, and \MMQ, and find strong evidence that \MMQ offers higher usability than both OCL and VMQL in a number of ways. This is particularly true when comparing \MMQ and OCL. At the same time, \MMQ offers a high degree of expressiveness. \MMQ can be applied to the whole range of modeling notations present in the UML, not just structural models or meta-models. In fact, \MMQ is not conceptually restricted to UML: we believe it is applicable to any modeling language that has a meta-model or where a meta-model can be constructed, including BPMN, EPCs, and DSLs.
+
+
+\subsection{Contributions}
+
+The contribution of this paper is to provide evidence for two observations. Firstly, we maintain that usability is an important concern when it comes to model query languages, but has been largely ignored in existing languages, most notably OCL. Thus, it is relatively easy at this point to achieve substantial improvements over the state of the art. Secondly, it is not so much the concrete syntax that contributes to usability, but the abstract syntax, that is, the conceptual constructs of the query language. In this paper, we show that a textual concrete syntax can actually perform better than a visual concrete syntax, which is somewhat in contradiction with the commonly held belief of visual notations generally being ``better'' than textual ones. 
+
+
+\subsection{Limitations}
+
+In its current state, \MMQ has several shortcomings. Firstly, it lacks a formal semantics. Given the time and difficulty it took to arrive at a formal semantics for OCL, we consider this more of a challenge and future work than a lasting deficit. 
+
+Secondly, \MMQ currently lacks the capability to define recursive functions, and thus complete expressiveness. \MMQ was designed with the practical modeler in mind, thus, many of the functions that modelers have to define themselves in OCL are built into \MMQ, thus reducing the need for such a feature. 
+
+Thirdly, \MMQ allows many expressions that are either hard to process, or may be confusing. For instance, \MMQ allows to express queries with double negation. Clearly, this is computationally inefficient, and since we use the regular negation-as-failure semantics of Prolog, the result might not be what the user expects. Moreover, since double negation is inherently cognitively difficult, using it will be a challenge. We currently lack empirical evidence on the actual usage of \MMQ in the field.
+
+
+\subsection{Future Work}
+
+Clearly, the current limitations of \MMQ are some threads of our ongoing and future work. In particular, it would be interesting to apply \MMQ to other modeling languages, such as BPMN and EPCs and see whether the current \MMQ is up to this task, or requires extensions and amendments. Also, parts of the implementation would have to be adapted to accommodate for different model representations.
+
+Then, performance is obviously an issue for practical model querying, in particular for using \MMQ for interactive operations on large models. We generally have very good experience with the performance of the technology underlying our approach in comparison with current OCL implementations (see also \cite{opoka:etal:comparison}), and experience so far indicate that \MMQ might in fact be dramatically faster than existing OCL tools. Still, we will have study and document the run-time performance of \MMQ.
+
+Moreover, our initial research hypothesis is based on the intuition, that the major improvement in usability would derive from using a visual rather than a textual concrete syntax for querying. Thus, one would expect a similar effect for, say, the Visual OCL \cite{bottoni:etal:consistency,bottoni:etal:visualisation}. Doing pairwise comparisons of OCL, Visual OCL, VMQL, and \MMQ, respectively, and studying the factors impacting modeler understanding with qualitative methods such as think aloud protocols might allow us to develop a theory about how queries are being processed by modelers. This, in turn, could be valuable in informing future language design practice.
+
+\bibliographystyle{plain}
+\bibliography{Literatur,Stoerrle}
+\end{document}

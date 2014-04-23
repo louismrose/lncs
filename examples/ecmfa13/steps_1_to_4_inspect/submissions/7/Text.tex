@@ -1,0 +1,69 @@
+\newcommand{\nid}{\noindent}
+
+\newcommand{\GLYPH}[1]{\includegraphics[width=4mm]{../../../Glyphs/Glyph-#1}}
+\newcommand{\GLYPHw}[1]{\includegraphics[width=4mm]{../../../Glyphs/Glyph-#1w}}
+
+\newcommand{\NR}[1]{\includegraphics[width=4mm]{Abb/Glyphs/Glyph-#1}}
+\newcommand{\NRO}[1]{\includegraphics[width=4mm]{Abb/Glyphs/Glyph-#1w}}
+
+\newcommand{\subsubsubsection}[1]{\paragraph{#1}}
+
+
+\newcommand{\Entrylabel}[1]{\mbox{\textbf{#1}}\hfil}  % companion S. 60ff.
+\newenvironment{Entry}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\Entrylabel}
+        \setlength{\labelwidth}{10pt}
+        \setlength{\leftmargin}{15pt}
+        }}
+{\end{list}}
+
+\newenvironment{twocolentry}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\Entrylabel}
+        \setlength{\labelwidth}{5pt}
+        \setlength{\leftmargin}{10pt}
+        }}
+{\end{list}}
+
+
+\newcommand{\entrylabel}[1]{\mbox{\textbf{#1}}\hfil}  % companion S. 60ff.
+\newenvironment{entry}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\entrylabel}
+        \setlength{\labelwidth}{35pt}
+        \setlength{\leftmargin}{50pt}
+        }}
+{\end{list}}
+
+\newcommand{\entrylabelIII}[1]{\mbox{\textbf{#1}}\hfil}  % companion S. 60ff.
+\newenvironment{denseentry}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\entrylabelIII}        
+        \itemsep=1pt plus 0pt minus 1pt
+        \parsep 1pt
+        \setlength{\labelwidth}{35pt}
+        \setlength{\leftmargin}{50pt}
+        }}
+{\end{list}}
+
+
+\newcommand{\entrylabelII}[1]{\mbox{\textbf{#1}}\hfil}  % companion S. 60ff.
+\newenvironment{bigentry}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\entrylabelII}
+        \setlength{\labelwidth}{85pt}
+        \setlength{\leftmargin}{90pt}
+        }}
+{\end{list}}
+
+\newcommand{\entrylabelIV}{$\bullet$}  % companion S. 60ff.
+\newenvironment{narrowitemize}
+  {\begin{list}{}%
+      {\renewcommand{\makelabel}{\entrylabelIV}       
+        \itemsep=1pt plus 0pt minus 1pt
+        \parsep 1pt
+        \setlength{\labelwidth}{5pt}
+        \setlength{\leftmargin}{15pt}
+        }}
+{\end{list}}

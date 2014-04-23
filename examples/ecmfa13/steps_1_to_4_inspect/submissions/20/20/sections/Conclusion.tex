@@ -1,0 +1,12 @@
+\section{Conclusion and Future Work}\label{sec:conclusion}
+In this paper, we have identified and addressed the challenges that emerge from integrating run-time monitoring of complex signatures into the AUTOSAR development process.
+The presented continuous model-based development process for security and safety monitors (MBSecMon) is integrated into the AUTOSAR process and incorporates data of the AUTOSAR models.
+As shown, it allows the modeling of monitor signatures in a well comprehensible graphical modeling language and the automatic generation of monitors with a low overhead that fulfill the AUTOSAR conventions.
+This framework and the generated monitors have been evaluated utilizing an example model provided with the MATLAB suite, for which AUTOSAR code was generated and integrated into an AUTOSAR environment.
+With the presented approach, we have overcome the lack of support for complex monitoring in the AUTOSAR tool chains.
+It is applicable to white-box (source code) and black-box (binary) components, as communication between components is intercepted directly at their port interface by instrumentation techniques shown in~\cite{Piper2012}.
+
+In the future, an evaluation in a larger AUTOSAR project with more complex interactions is planned.
+% Find ich eher verwirrend als Leser, der von den verschiedenen Kommunikationsparadigmen in AUTOSAR keine Ahnung hat.
+%Additionally, the prototypical implementation can be extended to support the client-server communication of the Virtual Functional Bus between the SW-Cs. 
+It has to be evaluated if the MBSecMon process can be used for Logical Program Flow Monitoring~\cite{AUTOSAR_WDM_SPEC}, eventually with another source specification language such as UML2 activity diagrams or MPNs directly. 

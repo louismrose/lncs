@@ -1,0 +1,45 @@
+\begin{multicols}{2}
+\begin{lstlisting}[language=derric, numbers=left, numberstyle=\tiny, numbersep=1pt]
+format PNG
+extension png
+strings ascii
+sequence Signature IHDR Chunk* IEND
+
+structures
+Signature {
+    marker: 137,80,78,71,13,10,26,10; 
+}
+
+Chunk {
+  length: lengthOf(chunkdata) size 4;
+  chunktype: type string size 4;
+  chunkdata: size length;
+  crc: checksum(
+         algorithm="crc32-ieee",
+         init="allone",start="lsb",
+         end="invert",store="msbfirst",
+         fields=chunktype+chunkdata)
+       size 4; 
+}
+
+IHDR = Chunk {
+  chunktype: "IHDR";
+  chunkdata: {
+    width: !0 size 4;
+    height: !0 size 4;
+    bitdepth: 1|2|4|8|16;
+    colourtype: 0|2|3|4|6;
+    compression: 0;
+    filter: 0;
+    interlace: 0|1;
+  }
+}
+
+IEND {
+  length: 0 size 4;
+  chunktype: "IEND";
+  crc: 0xAE,0x42,0x60,0x82;
+}
+\end{lstlisting}
+\end{multicols}
+

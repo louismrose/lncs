@@ -1,0 +1,58 @@
+\section{Introduction}\label{sec:introduction}
+
+Embedded systems are becoming increasingly interconnected and can no longer be considered as being separated from the outside world. 
+A prominent example are multimedia systems in the automotive domain that are connected to the internet without being totally separated from safety-critical components.
+Many systems have been developed as closed systems and often little attention has been paid to security mechanisms such as encryption and safe component design to deal with errors and attacks. 
+Even modern networks in the automotive domain are vulnerable to passive and active attacks \cite{Groll2009} and protocols such as the CAN bus protocol have been identified as a major security drawback \cite{Koscher2010}.
+This makes it necessary to secure safety-critical components and their communication, even if they are not directly accessible. 
+To secure these systems, Papadimitratos et al. \cite{Papadimitratos2008} propose a secured communication and demand a secure architecture.
+However, in the majority of cases, even such efforts cannot eliminate all security vulnerabilities that can lead to safety threats as it is impossible to foresee all attacks during development. 
+Moreover, it is often economically or technically infeasible to secure existing systems retroactively against external adversaries.
+Hence, systems and especially electronic control units in cars cannot be considered as secure against attacks, either caused by unknown vulnerabilities or by the required integration of legacy components. 
+To cope with these security and safety issues, run-time monitoring is a feasible approach to detect attacks that exploit previously unknown errors and security vulnerabilities \cite{Kumar1995}.
+
+The AUTOSAR (AUTomotive Open System ARchitecture) platform\footnote{AUTOSAR: http://www.autosar.org} is emerging in the automotive domain as an open industry standard for the development of in-vehicular systems.
+To cope with the growing complexity of modern vehicular systems, it provides a modular software architecture with standardized interfaces and a run-time environment (RTE) that separates application level software components from the underlying basic software modules and the actual hardware.  
+AUTOSAR offers a clearly structured system specification, which is stored in the standardized AUTOSAR XML (ARXML) format. 
+The AUTOSAR development process supports the monitoring of control flow and timing properties at a low abstraction level~\cite{AUTOSAR_OS_SPEC,AUTOSAR_WDM_SPEC}, but does not provide support for modeling complex monitoring functionality at the software component level.
+
+For this purpose, we have adopted our generic Model-based Security/Safety Monitor (MBSecMon) development tool chain~\cite{Patzina2011}. 
+It is based on the Model-Driven Development (MDD) concept that supports the generation of monitors from signatures describing the interactions between the components of a system.
+The MBSecMon specification language (MBSecMonSL) is based on Live Sequence Charts (LSC) introduced by Damm and Harel~\cite{Damm2001}, which have been extended \cite{Patzina2011} for the modeling of behavioral signatures.
+A specification based on these extended LSCs (eLSC) and a structural description of the system constitutes the input set of the MBSecMon process. 
+The signatures are divided in intended system behavior (use cases) and known attack patterns and attack classes (misuse cases). 
+These signatures are automatically transformed to a formally defined Petri net language, the Monitor Petri nets (MPNs) \cite{Patzina2010}, which serve as a more explicit, intermediate representation.
+With the provision of platform-specific information, security/safety run-time monitors are automatically generated for different target platforms.
+%\textcolor{red}{Target platforms supported are C, Java, VHDL \ldots}
+%\textcolor{red}{Monitors can be fed with information by wrappers around the AUTOSAR components, instrumentation framework\cite{Piper2012}}
+
+The contribution of this paper is the development of a methodology for the model-based development of complex run-time monitors for AUTOSAR that operate directly on the AUTOSAR system model.
+%address the lack of complex run-time monitoring support in AUTOSAR tool chains.
+We depict the challenges that arise during the development and integration of a model-based monitor generation framework into the AUTOSAR development process and present solutions to each.
+In summary, these challenges are as follows.
+\begin{enumerate}[label=\textbf{C\arabic{enumi}},ref=\arabic{enumi}]
+  \item \label{itm:integrationExisting} Integrating existing AUTOSAR development fragments into the monitor generation process. 
+  \item \label{itm:datatypesafety} Providing type safety during the whole modeling and generation process of the monitors.
+  \item \label{itm:modelling} Modeling monitor signatures on the same abstraction level as the AUTOSAR system models.  
+  \item \label{itm:mappingsig} Mapping of the abstract signature descriptions to platform specific monitoring code.
+  \item \label{itm:connectingmonitors} Providing communication data of the generated AUTOSAR software components (SW-C) to the monitors. 
+  \item \label{itm:relocatability} Supporting the relocatability of software components by generating distributed monitors from global signatures.
+  \item \label{itm:minimalOverhead} Generating monitors with a minimal overhead for the control units. 
+\end{enumerate}
+
+% \begin{itemize}
+%   \item Model-based approach for monitor specification and generation incorporating existing AUTOSAR specifications independent from the used AUTOSAR tool chain
+%   \item Using the AUTOSAR XML system view for modeling signatures
+%   \item Usage of existing development artifacts such as sequence charts that can be extracted from existing specification documents or traces
+%   \item Automatic generation and integration of complex monitors in AUTOSAR generated code via automatic minimal instrumentation of the application code.
+% \end{itemize}
+
+%\textcolor{red}{restriction to data-oriented Sender-Receiver Interface?}
+
+The remainder of the paper is structured as follows: 
+Section~\ref{sec:relatedWork} gives an overview of existing approaches for monitoring and instrumentation and describes how they can be applied in the AUTOSAR process.
+In Sect.~\ref{sec:mbsecmonFramework}, the challenges are described in detail, and solutions are presented based on the adaptation of the MBSecMon process for the AUTOSAR development process.
+%After that, the mentioned challenges are described in detail and solutions based on adaption of the MBSecMon process to the AUTOSAR development process are shown in Section~\ref{sec:mbsecmonFramework} by using an example from the automotive domain.
+The generated monitors that are connected to the example system are evaluated in Sect.~\ref{sec:evaluation}.
+In Sect.~\ref{sec:conclusion}, a conclusion is drawn, and possible future work is discussed.
+

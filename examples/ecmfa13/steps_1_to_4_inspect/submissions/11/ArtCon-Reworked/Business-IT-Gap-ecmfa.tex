@@ -1,0 +1,80 @@
+\section{The Business-IT Gap Problem}
+\label{sec:BITGap}
+
+In this section, we motivate our Shared Process Model concept. First we argue why we think that a single process model view is often not adequate for different stakeholders and we discuss how different views differ. We illustrate this issue by example of two prominent stakeholder views of a process: the business analysts view used for documentation, analysis and communicating requirements to IT and the IT view of a process that is used directly for execution. Then, we briefly argue that, with multiple views, we need a dedicated effort to keep them consistent.
+  
+  
+%-----------------------------------------------------------------------
+\subsection{Why we want different views}
+\label{sec:BITGap1}
+ 
+
+Since BPMN 2 can be used for both documentation and execution, why can't we use a single BPMN 2 model that is shared between business and IT? To study this question, we analyzed the range of differences between a process model created by a business analyst and the corresponding process model that was finally used to drive the execution on a BPM execution engine. We built on our earlier study \etal \cite{BXC+12}, which analyzed more than 70 model pairs from the financial domain, and we also investigated additional model pairs from other domains.  Additionally we talked to BPM architects from companies using process models to collect further differences. We summarize our findings here. 
+
+We identified the following categories of changes that were applied in producing an execution model from a business model. Fig.~\ref{fig:example} illustrates some of these changes in a simplified claim handling process. We refer to our earlier study by Branco \etal \cite{BXC+12} for a larger, more realistic example. Note that the following categorization of changes, based on a larger study, is a new contribution of this paper.
+
+\begin{figure}[bt]
+\begin{center}
+\vspace{-0.5cm}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[scale=0.4]{ClaimHandling.png} % bb=364 633 6 9,
+\caption{Illustration of some refinements often made going from the business to the IT model}
+\label{fig:example}
+\vspace{-0.5cm}
+\end{center}
+\end{figure}
+%
+
+{\small
+\begin{itemize*}
+%
+	\item \emph{Complementary implementation detail.} Detail that is needed for execution is merely added to the business model, i.e., the part of the model that was specified by the business analyst does not change. Such details include data flow and -transformation, service interfaces and communication detail. For example, to specify the data input for an activity in BPMN 2, one sets a specific attribute of the activity that was previously undefined. The activity itself, its containment in a subprocess hierarchy and its connection with sequence flow does not change.
+%	
+	\item \emph{Formalization and renaming.} Some parts of the model need to be formalized further to be interpreted by an execution engine, including routing conditions, specialization of tasks (into service task, human task etc., see Fig.~\ref{fig:example}) and typing subprocesses (transaction, call) and typing events. Furthermore, activities are sometimes renamed by IT to better reflect some technical aspects of the activity. These are local, non-structural changes to existing model elements that do not alter the flow.
+%	
+	\item \emph{Behavioral refinement and refactoring.} The flow of the process is changed in a way that does not essentially change the behavior. This includes
+	\begin{itemize*}
+	  \item \emph{Hierarchical refinement/subsumption.} A high-level activity is refined into a sequence of low-level activities or more generally, into a subprocess with the same input/output behavior. For example, `Settle Claim' in Fig.~\ref{fig:example} is refined into `Create Response Letter' and `Send Response'. The refining subprocess may or may not be explicitly enclosed in a separate scope (subprocess or call activity). If it is not enclosed in a separate scope, it is represented as a subgraph which has, in most cases, a single entry and a single exit of sequence flow. We call such a subgraph a \emph{fragment} in this paper.
+	 
+	  On the other hand, multiple tasks on the business level may be subsumed in a single service call or a single human task to map the required business steps to the existing services and sub-engines (human task, business rules). For example, in Fig.~\ref{fig:example}, `Get Personal Details' and `Get Insurance Details' got subsumed into a single call `Get Request Details' of the human task engine.
+	  %
+	  \item \emph{Hierarchical refactoring.} Existing process parts are separated into a subprocess or call activity or they may be outsourced into a separate process that is called by a message or event. Besides better readability and reuse, there are several other IT-architectural reasons motivating such changes. For example, performance, dependability and security requirements may require executing certain process parts in a separate environment. In particular, long-running processes are often significantly refactored under performance constraints. A long-running process creates more load on the engine than a short running process because each change need to be persisted. Therefore, short-running parts of long-running process are extracted to make the long-running process leaner.
+	  %
+	  \item \emph{Task removal and addition.} Sometimes, a business task is not implemented on the BPM engine. It may be not subject to the automation or it may already be partly automated outside the BPM system. On the other hand, some tasks are added on the IT level, that are not considered to be a part of an implementation of a specific business task. For example, a script task retrieving, transforming or persisting data or a task that is merely used for debugging purposes (e.g. `Log Session Data' in Fig.~\ref{fig:example}).
+  \end{itemize*}
+%
+	\item \emph{Additional behavior.} Business-level process models are often incomplete in the sense that they do not specify all possible behavior. Apart from exceptions on the business-level that may have been forgotten, there are usually many technical exceptions that may occur that require error handling or compensation. This error handling creates additional behavior on the process execution level. In Fig.~\ref{fig:example}, some fault handling has been added to the IT model to catch failing service calls.
+%
+	\item \emph{Correction and revision of the flow.} Some business-level process models would not pass syntactical and semantical validation checks on the engine. They may contain modeling errors in the control- or data flow that need to be corrected before execution. Sometimes activties also need to be reordered to take previously unconsidered data and service dependencies into account. These changes generally alter the behavior of the process. A special case is the possible parallelization of activities through IT, which may or may not be considered a behavioral change.
+	%
+\end{itemize*}
+}
+
+Different changes that occur in the IT implementation phase relate differently to the shared process model idea.
+Complementary detail could be easily handled by a single model through a \emph{progressive disclosure} of the process model, i.e., showing one graphical layer to business and two layers to IT stakeholders. 
+
+However, the decision which model elements are `business relevant' depends on the project and should not be statically fixed (as in the BPMN 2 conformance classes). Therefore, an implementation of progressive disclosure requires extensions that specify which element belongs to which layer. Additional behavior can be handled through progressive disclosure in a similar way as long as there are no dependencies to the business layer. For example, according to the BPMN~2 metamodel, if we add an error boundary event to a task with subsequent sequence flow specifying the error handling, then this creates no syntactical dependencies from the business elements to this addition. However, if we merge the error handling back to the normal flow through a new gateway or if we branch off the additional behavior by a new gateway in the first place, then the business elements need to be changed, which would substantially complicate any implementation of a progressive disclosure. 
+In this case, it would be easier to maintain two separate views. Also the changes in the categories \emph{behavioral refinement and refactoring} as well as \emph{formalization and renaming} clearly suggest to maintain two separate views.
+
+
+
+
+%-----------------------------------------------------------------------
+\paragraph{Why different views need to be synchronized.}
+
+In fact, many organizations today keep multiple versions of a process model to reflect the different views of the stakeholder (cf., e.g., \cite{BXC+12,Tran08,WeidlichBMW09}). However, because today's tools do not have any support for synchronizing them, they typically become inconsistent over time. That is, they disagree about which business tasks are executed and in which order. This can lead to costly business disruptions or to audit failures \cite{BXC+12}. In the technical report version of this paper \cite{KVF+TR}, we elaborate this point in more detail.
+
+\forget{
+There are various reasons why business and IT models become inconsistent over time. We explained above in Section~\ref{sec:BITGap1} (see \emph{Correction and revision of the flow}) that, already in the initial implementation of a process, the flow may need to be corrected or revised. If these updates are only done on the IT model and not on the business model, then the models become already inconsistent in the initial implementation phase. Respondents in our earlier survey \cite{BXC+12} have agreed that inconsistency arises already in that phase because the initial business model is incomplete (frequently), contains modeling errors (occasionally to frequently), the business model contradicts some IT requirements (occasionally) and the business model does not faithfully represent the actual business process (rarely). 
+
+Furthermore, more inconsistencies arise when business requirements change, which are then often applied to only the IT model because of time pressure, neglecting a simultaneous update of the corresponding business model. Likewise changing IT requirements, e.g., an upcoming IT infrastructure change, may change some business-relevant aspects of the IT model, which creates further inconsistencies between the business and the IT model.
+
+Thus, while different views onto a process are needed by different stakeholders, different views quickly become inconsistent if not synchronized. Inconsistencies in turn can create business disruptions, audit failures, maintenance problems, or delays in the implemementation of new requirements. They can also lead to a business analyst misinterpreting process monitoring data.
+}
+
+
+
+
+
+
+

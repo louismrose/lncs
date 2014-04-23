@@ -1,0 +1,62 @@
+%\newcommand{\setto}{def \atop = }
+
+\newcommand{\true}{{\sf true } \xspace}
+\newcommand{\false}{{\sf false } \xspace}
+
+\newcommand{\gdw}{\Longleftrightarrow}
+\newcommand{\impl}{\Rightarrow}
+%\newcommand{\implies}{\Longrightarrow} %ist in ams math definiert
+
+\newcommand\FORALL[2]{\forall_{#1}:\;#2}
+\newcommand\EXISTS[2]{\exists_{#1}:\;#2}
+
+\newcommand\FORALLB[2]{\forall #1 {\bf :} (#2)}
+\newcommand\EXISTSB[2]{\exists #1 {\bf :} (#2)}
+\newcommand{\Exists}{\mathop{\exists}\displaylimits}
+
+
+%\theoremheaderfont{\bf}
+%\theoremstyle{break}
+%{\theorembodyfont{\rmfamily}
+\newtheorem {Definition}{Definition}[section]
+%\newtheorem {Lemma}{Lemma}[section]
+%\newtheorem {Proposition}{Proposition}[section]
+%\newtheorem {Theorem}[Lemma]{Theorem}
+%\newtheorem {Proof}[Lemma]{Proof}
+%\newtheorem {Note}{Note}}
+%\newtheorem {Notation}{Notation}
+
+\newcommand{\cctl}{$CTL$\xspace}
+\newcommand{\cctlstar}{$CTL^*$\xspace}
+
+
+\sloppy
+
+%little black box
+\newcommand{\lbb}{{\unitlength=1.5mm
+\begin{picture}(1,1)
+\put(0,0){\framebox(1,1){}}
+\put(0.1,0.1){\framebox(0.8,0.8){}}
+\put(0.2,0.2){\framebox(0.6,0.6){}}
+\put(0.3,0.3){\framebox(0.4,0.4){}}
+\put(0.4,0.4){\framebox(0.2,0.2){}} 
+\put(0.5,0.5){\framebox(0.05,0.05){}}
+\end{picture}
+}}
+\newcommand{\lbbb}{{\unitlength=1mm
+\begin{picture}(1,1)
+\put(0,0){\framebox(1,1){}}
+\put(0.1,0.1){\framebox(0.8,0.8){}}
+\put(0.2,0.2){\framebox(0.6,0.6){}}
+\put(0.3,0.3){\framebox(0.4,0.4){}}
+\put(0.4,0.4){\framebox(0.2,0.2){}} 
+\put(0.5,0.5){\framebox(0.05,0.05){}}
+\end{picture}
+}}
+
+\newcommand{\lwb}{{\unitlength=1.5mm
+\begin{picture}(1,1)
+\put(0,0){\framebox(1,1){}}
+\end{picture}
+}}
+\newcommand{\Enddef}{\hspace*{\fill} \lwb}

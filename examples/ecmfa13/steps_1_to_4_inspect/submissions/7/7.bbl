@@ -1,0 +1,121 @@
+\begin{thebibliography}{10}
+
+\bibitem{awad:diss}
+Ahmed Awad.
+\newblock {\em {A Compliance Management Framework for Business Process
+  Models}}.
+\newblock PhD thesis, {Hasso Plattner Institute, Univ.\ of Potsdam}, 2010.
+
+\bibitem{awad:etal:2008:bpmq}
+Ahmed Awad, Gero Decker, and Mathias Weske.
+\newblock {Efficient Compliance Checking Using BPMN-Q and Temporal Logic}.
+\newblock In {\em {Proc.\ Intl.\ Conf.\ Business Process Modeling (BPM)}},
+  volume 5240 of {\em LNCS}, pages 326--341. Springer Verlag, 2008.
+
+\bibitem{Beeri:etal:2006:bpql}
+Catriel Beeri, Anat Eyal, Simon Kamenkovich, and Tova Milo.
+\newblock {Querying Business Processes}.
+\newblock In {\em {Proc.\ 32nd Intl.\ Conf.\ Very Large Data Bases (VLDB)}},
+  pages 343--354. VLDB Endowment, 2006.
+
+\bibitem{bottoni:etal:consistency}
+Paolo Bottoni, Manuel Koch, Francesco Parisi-Presicce, and Gabriele Taentzer.
+\newblock {Consistency Checking and Visualization of OCL Constraints}.
+\newblock In Bran Selic, Stuart Kent, and Andy Evans, editors, {\em {Proc.\
+  $3^{\mathit{rd}}$ Intl.\ Conf.\ Unified Modeling Language
+  ($\flqq$UML$\frqq$'00)}}, number 1939 in LNCS, pages 294--308. Springer
+  Verlag, 2000.
+
+\bibitem{bottoni:etal:visualisation}
+Paolo Bottoni, Manuel Koch, Francesco Parisi-Presicce, and Gabriele Taentzer.
+\newblock {A Visualisation of OCL using Collaborations}.
+\newblock In Martin Gogolla and Chris Kobryn, editors, {\em {Proc.\
+  $4^\mathit{th}$ Intl.\ Conf.\ Unified Modeling Language
+  ($\flqq$UML$\frqq$'01)}}, number 2185 in LNCS, pages 257--271. Springer
+  Verlag, 2001.
+
+\bibitem{opoka:etal:comparison}
+Joanna Chimiak-Opoka, Michael Felderer, Chris Lenz, and Christian Lange.
+\newblock {Querying UML Models using OCL and Prolog: A Performance Study}.
+\newblock In Alain Faivre, Sudipto Ghosh, and Alexander Pretschner, editors,
+  {\em {Ws.\ Model Driven Engineering, Verification, and Validation
+  (MoDeVVa'08)}}, pages 81--89, 2008.
+
+\bibitem{stoerrle:mq4b:expressing:vlhcc}
+{G.\ Costagliola et al.}, editor.
+\newblock {\em {Expressing Model Constraints Visually with VMQL}}. IEEE
+  Computer Society, 2011.
+
+\bibitem{gopher:braune:psychophysics}
+Daniel Gopher and Rolf Braune.
+\newblock {On the psychophysics of workload: Why bother with subjective
+  measures?}
+\newblock {\em Human Factors}, 26(5):519--532, 1984.
+
+\bibitem{uml24beta}
+OMG.
+\newblock {OMG Unified Modeling Language (OMG UML), Superstructure, V2.4
+  (ptc/2010-12-06)}.
+\newblock Technical report, Object Management Group, January 2011.
+
+\bibitem{ocl231}
+OMG.
+\newblock {OCL Specification v2.3.1 (formal/2012-01-01)}.
+\newblock Technical report, Object Management Group, January 2012.
+
+\bibitem{paas:etal:2003cognitive}
+Fred Paas, Juhani~E. Tuovinen, Huib Tabbers, and Pascal~W.M. Van~Gerven.
+\newblock {Cognitive Load Measurement as a Means to Advance Cognitive Load
+  Theory}.
+\newblock {\em {Educational Psychologist}}, 38(1):63--71, 2003.
+
+\bibitem{r}
+{R Development Core Team}.
+\newblock {\em R: A Language and Environment for Statistical Computing}.
+\newblock R Foundation for Statistical Computing, Vienna, Austria, 2011.
+
+\bibitem{stein:etal:graphical:lncs}
+Dominik Stein, Stefan Hanenberg, and Rainer Unland.
+\newblock {A Graphical Notation to Specify Model Queries for MDA
+  Transformations on UML Models}.
+\newblock In Uwe A{\ss}mann, editor, {\em {Proc.\ $2^\mathrm{nd}$ Working
+  Conf.\ Model Driven Architecture: Foundations and Applications (MDAFA
+  2004)}}, number 3599 in LNCS, pages 77--92. Springer Verlag, 2004.
+\newblock available at \url{www.ida.liu.se/~henla/mdafa2004}, updated papers
+  appeared later as LNCS 3599, Springer.
+
+\bibitem{stein:etal:query}
+Dominik Stein, Stefan Hanenberg, and Rainer Unland.
+\newblock {Query Models}.
+\newblock In Thomas Baar, Alfred Strohmeier, Ana Moreira, and Stephen~J.
+  Mellor, editors, {\em {Proc.\ $7^\mathrm{th}$ Intl.\ Conf.\ Unified Modeling
+  Language ($\flqq$UML$\frqq$'04)}}, number 3273 in LNCS, pages 98--112.
+  Springer Verlag, 2004.
+
+\bibitem{stoerrle:mq3:vlhcc09}
+Harald St{\"o}rrle.
+\newblock {VMQL: A Generic Visual Model Query Language}.
+\newblock In Martin Erwig, Robert DeLine, and Mark Minas, editors, {\em {Proc.\
+  IEEE Symposium on Visual Languages and Human-Centric Computing (VL/HCC'09)}},
+  pages 199--206. IEEE Computer Society, 2009.
+
+\bibitem{stoerrle:mc1b:jsosym}
+Harald St{\"o}rrle.
+\newblock {Towards Clone Detection in UML Domain Models}.
+\newblock {\em J.\ Software and Systems Modeling}, 2011.
+\newblock (in print).
+
+\bibitem{stoerrle:mq3b:jvlc}
+Harald St{\"o}rrle.
+\newblock {VMQL: A Visual Language for Ad-Hoc Model Querying}.
+\newblock {\em J.\ Visual Languages and Computing}, 22(1), February 2011.
+
+\bibitem{stoerrle:mvc4:presentation}
+Harald St{\"o}rrle.
+\newblock {Making Sense to Modelers - Presenting UML Class Model Differences in
+  Prose}.
+\newblock In Joaquim Filipe, Rui~César {das Neves}, Slimane Hammoudi, and Luís
+  Ferreira~Pires, editors, {\em {Proc.\ 1st Intl.\ Conf.\ Model-Driven
+  Engineering and Software Development}}, pages 39--48. SCITEPRESS, 2013.
+
+\end{thebibliography}

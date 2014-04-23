@@ -1,0 +1,26 @@
+
+\ProvidesPackage{derriclst}
+\RequirePackage{listings}
+\RequirePackage{xspace}
+
+\lstdefinelanguage{derric}{%
+% numbers=left,%
+ morekeywords={format,extension,sequence,not,structures,lengthOf,size,expected,unknown,terminatedBy,terminatedBefore,default,unit,sign,type,endian,strings,offset,checksum,compressed},
+ sensitive=true,%
+ morecomment=[l]{//},%
+ morestring=[b]",%
+ commentstyle=\footnotesize\ttfamily\itshape,%
+ keywordstyle=\bfseries,%
+ basicstyle=\footnotesize\ttfamily,%
+ showstringspaces=false,%
+% columns=flexible,%
+ escapeinside={(*@}{@*)},%
+ literate={<-}{{\,$\leftarrow$}\,}1 {=>}{{\,$\Rightarrow$}\,}1 {:}{\textbf{:}}1,%
+}
+
+\newcommand{\derric}[1]{\lstinline[language=derric]{#1}}
+
+\lstset{%
+  language=derric%
+}
+

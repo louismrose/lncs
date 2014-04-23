@@ -1,0 +1,90 @@
+
+
+
+\newcommand{\HD}[1]{\sc{\textbf{#1}}} 
+\newcommand{\HC}[1]{\multicolumn{1}{c|}{\HD{#1}}}
+\newcommand{\HDl}[2]{\multicolumn{#1}{c|}{\HD{#2}}}
+\newcommand{\HDn}[2]{\multicolumn{#1}{c||}{\HD{#2}}}
+\newcommand{\HDm}[2]{\multicolumn{#1}{|c||}{\HD{#2}}}
+\newcommand{\HDk}[2]{\multicolumn{#1}{|c|}{\HD{#2}}}
+\newcommand{\HCm}[2]{\multicolumn{#1}{|c||}{#2}}
+\newcommand{\HCl}[2]{\multicolumn{#1}{|c|}{#2}}
+\newcommand{\HDr}[1]{\multicolumn{1}{|r||}{\HD{#1}}}
+\newcommand{\HAS}[3]{\multicolumn{#1}{|c||}{\makebox[#2][c]{\HD{#3}}}}
+\newcommand{\HASl}[3]{\multicolumn{#1}{|c|}{\makebox[#2][c]{\HD{#3}}}}
+\newcommand{\MEAN}[1]{\makebox[{#1}][c]{$\mu$}}
+\newcommand{\SDEV}[1]{\makebox[#1][c]{\HD{$\sigma$}}}
+
+%
+\newcommand{\ITEM}[1]{\textbf{#1}} 
+
+% Tables for comparison of features
+%\newcommand{\YES}{$\checkmark$} 
+%\newcommand{\NO}{${\times}$}
+
+\usepackage{pifont}
+\newcommand{\YES}{\ding{52}} 
+\newcommand{\NO}{\ding{55}}
+
+
+\newcommand{\VERYLOW}{$\circ$}
+\newcommand{\LOW}{$\bullet$}
+\newcommand{\MIDDLE}{$\bullet\hspace{2pt}\bullet$}
+\newcommand{\HIGH}{$\bullet\bullet\bullet$}
+\newcommand{\VERYHIGH}{$\bullet\bullet\bullet\hspace{2pt}\bullet$}
+
+\newcommand{\OOOO}{$\square$}
+\newcommand{\OOOX}{$\square\square\square\blacksquare$}
+\newcommand{\OOXX}{$\square\square\blacksquare\blacksquare$}
+\newcommand{\OXXX}{$\square\blacksquare\blacksquare\blacksquare$}
+\newcommand{\XXXX}{$\blacksquare\blacksquare\blacksquare\blacksquare$}
+
+
+\newcommand{\OOO}{$\square\square\square$}
+\newcommand{\OOX}{$\square\square\blacksquare$}
+\newcommand{\OXO}{$\square\blacksquare\square$}
+\newcommand{\OXX}{$\square\blacksquare\blacksquare$}
+%\newcommand{\OXX}{$\circ\bullet\bullet$}
+\newcommand{\XOO}{$\blacksquare\square\square$}
+\newcommand{\XOX}{$\blacksquare\square\blacksquare$}
+\newcommand{\XXO}{$\blacksquare\blacksquare\square$}
+\newcommand{\XXX}{$\blacksquare\blacksquare\blacksquare$}
+%\newcommand{\XXX}{$\bullet\bullet\bullet$}
+
+\newcommand{\SizeVis}[1]{
+$
+	\ifthenelse{\equal{#1}{XS}} {\square}{}
+	\ifthenelse{\equal{#1}{S}}  {\blacksquare}{}
+	\ifthenelse{\equal{#1}{SM}} {\blacksquare\square}{}
+	\ifthenelse{\equal{#1}{M}}  {\blacksquare\blacksquare}{}
+	\ifthenelse{\equal{#1}{ML}} {\blacksquare\blacksquare\square}{}
+	\ifthenelse{\equal{#1}{L}}  {\blacksquare\blacksquare\blacksquare}{}
+	\ifthenelse{\equal{#1}{LXL}}{\blacksquare\blacksquare\blacksquare\square}{}
+	\ifthenelse{\equal{#1}{XL}} {\blacksquare\blacksquare\blacksquare\blacksquare}{}
+$
+}
+
+\newcommand{\VERYGOOD}{$++$}
+\newcommand{\GOOD}{$+$}
+\newcommand{\OK}{$\pm$}
+\newcommand{\BAD}{$-$}
+\newcommand{\VERYBAD}{$--$}
+
+\newcommand{\ALL}{$\bullet\bullet\bullet$}
+\newcommand{\MANY}{$\bullet\bullet$}
+\newcommand{\SOME}{$\bullet$}
+\newcommand{\LITTLE}{$\circ$}
+\newcommand{\NONE}{}
+
+%\newcommand{\AMOUNT0}{}
+%\newcommand{\AMOUNT1}{$\circ$}
+%\newcommand{\AMOUNT2}{$\bullet$}
+%\newcommand{\AMOUNT3}{$\bullet\circ$}
+%\newcommand{\AMOUNT4}{$\bullet\bullet$}
+%\newcommand{\AMOUNT5}{$\bullet\bullet\circ$}
+%\newcommand{\AMOUNT6}{$\bullet\bullet\bullet$}
+
+\newcommand{\BUT}[1]{${}^#1$}
+\newcommand{\SKIP}{}
+
+\newcommand{\UU}[1]{\raisebox{-1.5ex}[-1.5ex]{\textbf{#1}}}

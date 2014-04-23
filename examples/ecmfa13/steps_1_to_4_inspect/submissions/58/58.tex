@@ -1,0 +1,571 @@
+\documentclass[a4paper]{llncs}
+
+\usepackage{amsmath}
+\usepackage{xspace}
+\usepackage{booktabs}
+\usepackage{relsize}
+\usepackage{multirow}
+\usepackage{derriclst}
+\usepackage[scaled=0.8]{beramono}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage{boxedminipage}
+\usepackage{tikz}
+\usepackage{array}
+\usepackage{pgfplots}
+\usepackage{mathptm}
+\usepackage{stmaryrd}
+
+\def\derric{\textsc{Derric}\xspace}
+
+\newcommand{\JPEG}{\textsmaller{JPEG}\xspace}
+\newcommand{\GIF}{\textsmaller{GIF}\xspace}
+\newcommand{\PNG}{\textsmaller{PNG}\xspace}
+\newcommand{\GB}{\textsmaller{GB}\xspace}
+\newcommand{\DSL}{\textsmaller{DSL}\xspace}
+\newcommand{\EXIF}{\textsmaller{EXIF}\xspace}
+
+\def\mykeyword#1{\textbf{\texttt{#1}}}
+\def\identifier#1{\texttt{#1}}
+
+\def\levelGood{\ensuremath{Low}\xspace}
+\def\levelOk{\ensuremath{Medium}\xspace}
+\def\levelBad{\ensuremath{High}\xspace}
+
+\begin{document}
+
+\title{A Case Study in Evidence-Based DSL Evolution}
+
+\author{Jeroen van den Bos\inst{1,2} \and Tijs van der Storm\inst{1}}
+\institute{Centrum Wiskunde \& Informatica, Amsterdam, The Netherlands
+\and Netherlands Forensic Institute, Den Haag, The Netherlands\\
+\email{jeroen@infuse.org}, \email{storm@cwi.nl}}
+
+\maketitle
+
+\begin{abstract}
+Domain-specific languages (\DSL{}s) can significantly increase productivity and quality in software construction. 
+However, even \DSL programs need to evolve to accomodate changing requirements and circumstances.
+How can we know if the design of a \DSL supports the relevant evolution scenarios on its programs?
+We present an experimental approach to evaluate the evolutionary capabilities of a \DSL and apply it on a \DSL for digital forensics, called \derric.
+Our results indicate that the majority of required changes to \derric programs are easily expressed.
+However, some scenarios suggest that the \DSL design can be improved to prevent future maintenance problems.
+Our experimental approach can be considered first steps towards evidence-based \DSL evolution.
+\end{abstract}
+
+\section{Introduction\label{sect:introduction}}
+
+\noindent
+Domain-specific languages (\DSL{}s) can increase productivity by trading generality for expressive power~\cite{MernikEtAl05,vanDeursenEtAl00}.
+Furthermore, \DSL{}s have the potential to improve the practice of software maintenance: routine changes are easily expressed. 
+More substantial changes, however, might require the \DSL itself to be changed~\cite{vanDeursenKlint98}. 
+How can we find out whether the relevant maintenance scenarios will require routine changes or not?
+
+In this paper we present a test-based experimental approach to answer this question and apply it to a domain-specific language for describing file formats: \derric~\cite{derric_casestudy}.
+\derric is used in the domain of digital forensics to generate software to analyze, reconstruct, and recover file-based evidence from storage devices.
+In digital forensics it is common that such file format descriptions need to be changed regularly, either to accomodate new file format versions, or to deal with vendor idiosyncrasies. 
+
+As a starting point, we have assembled a large corpus of image files to trigger failing executions of the file recognition code that is generated from \derric descriptions.
+Each failing execution is attempted to be corrected through a modification of the \derric code, until all image files are correctly recognized.
+The required changes are accurately tracked, categorized and rated in terms of complexity.
+This set of changes provides an empirical baseline to assess whether the design of \derric sufficiently facilitates necessary maintenance.
+
+The results show that all of the required changes were expressible in \derric; the \DSL did not have to be changed to resolve all failures.
+The majority of harvested changes consists of multiple, inter-dependent modifications. 
+The second most common change consists of a single, simple, local modification.
+Finally, a minority of changes is more complex.
+We discuss how the \derric \DSL may be changed to make these changes expressed more easily.
+Thus, the experiment has provided us with empirical data to improve the design of \derric.
+
+The contributions of this paper can be summarized as follows:
+\begin{itemize}
+\item We describe and apply an experiment in \DSL-based maintenance in the context of \derric, and provide a detailed description including its parameters.
+\item We present empirical results on how the \derric \DSL supports the maintenance process in the domain of digital forensics.
+\item We discuss the usefulness of this approach and how it has helped us to both evaluate and improve the design of \derric.
+\end{itemize}
+These contributions can be considered first steps towards evidence-based \DSL evolution. 
+
+\section{Background\label{sect:background}}
+
+\noindent
+\derric is a \DSL to describe binary file formats~\cite{derric_casestudy}. 
+It is used in digital forensics investigations to construct highly flexible and high performance analysis tools. 
+One example is the construction of file carvers~\cite{derric_background}, which are used to recover possibly damaged evidence from confiscated storage devices (e.g., hard disks, cameras, mobile phones etc.). 
+\derric descriptions are used to generate some of the software components, called \textit{validators}, that check whether a recovered piece of data is a valid file of a certain type.
+
+\begin{figure}[t]
+\include{png_simplified_example}
+\caption{Simplified \PNG in \derric.\label{FIG:png}}
+\end{figure}
+
+An example \derric description for a simplified version of the \PNG file format is shown in Fig.~\ref{FIG:png}.
+The structure of a file format is declared using the \mykeyword{sequence} keyword. 
+The sequence consists of a regular expression that specifies the syntax of a file format in terms of basic blocks, called \textit{structures}. 
+In this case, a \PNG file starts with a \identifier{Signature} block, an \identifier{IHDR} block, zero-or-more \identifier{Chunk}s and finally an \identifier{IEND} block. 
+
+The contents of each structure is defined in the following \mykeyword{structures} section.
+A structure consists of one or more fields. 
+The contents and size of each field are constrained by expressions. 
+The simplest expression is a constant, that directly specifies the content, and hence length, of a field.
+This is the case for the \identifier{marker} field of the \identifier{Signature} structure.
+Another common type of constraint only restricts the type and/or length of a field.
+For instance, the \identifier{chunktype} field of structure \identifier{Chunk} is constrained to be of type \identifier{string} and size 4.
+Constraints may involve arbitrary content analyses.
+For example, consider the \identifier{crc} field. 
+To recognize this field a full checksum analysis following the \texttt{crc32-ieee} algorithm should be performed. 
+
+\section{Observing Corrective Maintenance\label{sect:approach}}
+
+\noindent
+To study the maintainability characteristics of \derric, we need a way to inspect and evaluate actual maintenance scenarios. 
+In other words: we need to observe how \DSL programs are changed.
+For the purpose of this paper, we focus on \textit{corrective} maintenance~\cite{ISO14764}, which is maintenance in response to observed failures (``bug fixing''). 
+
+To realize this, a large corpus of representative and relevant inputs to a \DSL program is needed, which allows us to automatically generate failures, which in turn trigger corrective maintenance actions.
+The approach is similar to \textit{fuzzing} where a program is run on large quantities of invalid, unexpected or even random input data~\cite{Oehlert05}. 
+For maintenance evaluation, however, it is of paramount importance that the data is representative of what would be encountered in practice.
+
+In the case of \derric we have assembled a large, representative corpus of image files (\JPEG, \GIF and \PNG) for which \derric descriptions are available. 
+The exact nature of these descriptions and the corpus is described in detail in Section~\ref{sect:experiment}.
+
+For each file format $f$, the initial \derric $D^i_f$ description is compiled to a validator and subsequently run on the corpus files of type $f$.
+This results in an initial set of files for which validation fails\footnote{Technically, both false positives and false negatives are failures. However, since the corpus only contains real files, we cannot detect when a validator would incorrectly validate a file.}.
+The set of failures is then divided over equivalence classes which are sorted by their size.
+This allows us to focus on the most urgent problems first.
+Next, $D^i_f$ is edited to obtain a new version $D^{i+1}_f$ which resolves at least one of the failures in the largest equivalence class. 
+As soon as the set of failures is observed to decrease, $D^{i+1}_f$ is committed to the version control system.
+Before committing we ensure that the set of correctly validated files (the true positives) strictly increases, as a form of regression test.
+The process then repeats, now using $D^{i+1}_f$ as a starting point.
+
+After all failures have been resolved, the changes, as stored in the version control, are categorized in \textit{change complexity classes}. 
+A change may thus be interpreted as being more complex than another change. 
+This provides an empirical base line to qualitatively assess to what extent \derric supports maintenance of format descriptions. 
+
+\section{Experiment\label{sect:experiment}}
+
+\subsection{\DSL Programs and Corpus\label{sect:corpus}}
+
+\noindent
+The three \DSL programs that have been used are \derric descriptions of \JPEG, \GIF and \PNG.
+These file formats are well-known, very common and highly relevant to the practice of digital forensics. 
+An impression of the sizes of these descriptions is given in Table~\ref{tab:initial}. 
+From the table it can be inferred that the descriptions are significantly different.
+Both \GIF and \PNG have a richer syntactic structure than \JPEG. 
+Structure inheritance is heavily used in  \JPEG and \PNG but only once in \GIF. 
+Finally, \GIF has a lot more fields per structure (58 per 12). 
+Summarizing, we claim that the three file format descriptions cover a wide range of \derric's language features, in different ways.
+
+\begin{table}[h]\centering
+\begin{minipage}{.49\textwidth}\centering
+\vspace{13pt}
+\begin{tabular}{lrrr}
+& \multicolumn{1}{c}{\JPEG} & \multicolumn{1}{c}{\GIF} & \multicolumn{1}{c}{\PNG} \\
+\midrule
+Sequence tokens & 14 & 29 & 30 \\
+Structures & 15 & 12 & 20 \\
+Uses of inheritance & 10 & 1 & 17 \\
+Field definitions & 32 & 58 & 27 \\
+\midrule
+\end{tabular}
+\vspace{5pt}
+\caption{Initial \derric descriptions.\label{tab:initial}}
+\end{minipage}
+\begin{minipage}{.49\textwidth}\centering
+\begin{tabular}{crrrr}
+& \multicolumn{2}{c}{Data Set} &
+\multicolumn{2}{c}{Failures}\\
+\multicolumn{1}{c}{Format} &
+\multicolumn{1}{c}{\#} & \multicolumn{1}{c}{size} &
+\multicolumn{1}{c}{\#} & \multicolumn{1}{c}{\%}\\
+\midrule
+\JPEG &
+930,386 & 327\GB &
+5,485 & 0.6\% \\
+\GIF &
+36,524 & 3\GB &
+389 & 1.1\% \\
+\PNG &
+236,398 & 27\GB &
+5,789 & 2.4\% \\
+\midrule
+Total & 1,203,308 & 357\GB &
+11,663 & 1.0\% \\
+\end{tabular}
+\vspace{5pt}
+\caption{Initial validator results.\label{TAB:initial}}
+\end{minipage}
+\end{table}
+
+The second important component of the experiment, is a representative corpus. 
+We have developed such a corpus for the evaluation of our earlier work on model-transformation of \derric descriptions~\cite{derric_transformations}. 
+This data set contains \JPEG, \GIF and \PNG images found on Wikipedia, downloaded using the latest available static dump list, which dates from 2008\footnote{Available at \url{https://github.com/jvdb/derric-eval}}.
+Around 50\% of the files on that list were still available and included in the set.
+An overview of the data set is shown in Table~\ref{TAB:initial}. 
+The corpus contains a total of 1,203,410 images, leading to a total size of 357 \GB. 
+As the last two columns show, not all images in the data set are recognized by the validators generated from the respective \JPEG, \GIF and \PNG descriptions: between 0.6\% and 2.4\% of the files in the data set are not recognized using the base descriptions of the respective file formats.
+
+The Wikipedia data set can be considered representative, since the files uploaded to it originate from many different sources (e.g., cameras, editing software, etc.).
+We have verified this diversity by inspecting the metadata of the files and aggregating the results.
+
+This shows that the set contains files from a large number of different cameras (e.g., Canon, Nikon, etc.)
+Furthermore, many images have been modified using a multiplicity of tools (e.g., Photoshop, Gimp, etc.)
+Original computer images such as diagrams and logos have been created using many different tools (e.g., Dot, Paintshop Pro, etc.)
+
+The diversity is depicted graphically in Fig.~\ref{fig:software}, showing the distribution of files over values of the \EXIF \textit{Software} tag present in 28.4\% of the images.
+The most common tool is Photoshop 7.0, used on 3.4\% of the corpus; Photoshop CS2 and CS (Windows) are used on 2.3\% and 1.8\% respectively.
+ImageReady covers 1.6\%.
+After that the percentages rapidly decrease:
+no specific version of any application was used in more than 1\% of the files. 
+The number of different values is 4,024.
+
+\begin{figure}
+\begin{center}
+{\small
+\input{software}
+}
+\caption{Distribution of \EXIF \textit{Software} tag values over 28.4\% of the corpus\label{fig:software}}
+\end{center}
+\end{figure}
+
+\subsection{Classifying and Ordering Failures\label{sect:sorting}}
+
+\noindent
+To improve productivity and handle the most relevant issues first, the set of failures is divided over equivalence classes, according to their \textit{longest normalized recognized prefix}: this is the sequence of \derric structures that has been successfully recognized before recognition failed. 
+Classification is repeated after each iteration, because after each change to a description, files might now fail with another prefix.
+
+The prefix is normalized to eliminate the common effect of repeating structures. 
+For instance, if the recognized prefix consists of the structures \texttt{A B B C}, then the normalized prefix is \texttt{A B+ C}. 
+The plus-sign indicates one-or-more occurrences. 
+As a result, files that failed recognition with prefixes \texttt{A B C}, \texttt{A B B C}, \texttt{A B B B C}, etc. all end up in the same bucket. 
+The equivalence classes thus obtained are then sorted according to size in order to first improve those parts of the description that generate the most failures.
+
+\subsection{Evolving the Descriptions\label{sect:approach_improving}}
+
+\noindent
+The next step in the experiment is to manually fix the descriptions until all failures have been resolved.
+After each change, we recorded how many \textit{edits}---additions, modifications and deletions---were needed to reduce the number of failures.
+An edit captures an atomic delta to a description. 
+Edits can be applied to either the sequence or the list of structures. 
+The semantics of edits is summarized in Table~\ref{TAB:edits}.
+
+\begin{table}[t]\small
+\begin{center}
+\begin{tabular}{l *{2}{>{\raggedright\arraybackslash}p{0.34\linewidth}}}
+          & Structures & Sequence \\
+\midrule
+Add       & Add new structure & Insert structure symbol   \\[0.4em]
+Modify  & Add, modify, or delete field & Change regular grammar \\[0.4em]
+Delete   & Remove structure definition & Remove structure symbol \\
+\midrule
+\end{tabular}
+\end{center}
+\caption{Edit semantics: a \derric description's two main sections can be edited in three ways.\label{TAB:edits}}
+\end{table}
+
+The simplest edits are addition/removal of a structure to/from the structures section of a \derric description, and adding/removing a referenced structure from the sequence expression (cf. Fig.~\ref{FIG:png}). 
+Furthermore, a structure itself can be modified by adding, modifying or removing fields. 
+The sequence can be modified by changing the regular expression without adding or removing a structure reference.
+
+Each change has been tracked in the Git version control system\footnote{Available at \url{https://github.com/jvdb/derric-eval}} to allow full traceability and reproducability of the results of this paper.
+In fact, a single change corresponds to a single commit.
+After each change the \derric compiler was rerun with the modified descriptions. 
+The process was repeated until all failures were resolved.
+
+\subsection{Change Complexity Classes\label{sect:complexity_classes}}
+
+\noindent
+After all failures have been resolved, the resulting set of changes is divided over equivalence classes according to their \textit{change complexity}. 
+Change complexity is intuitively defined in terms of the number of edits in a change, their interrelatedness and how much they are scattered across a source file: more edits, more interrelatedness and more scattering, means higher complexity.
+
+A change consisting of a single edit has very low change complexity.
+On the other hand, a change involving many logically related edits, scattered over the whole program, has a high change complexity.
+Simple, low complexity changes leave the structure of the original program mostly intact. 
+At the opposite end, high complexity changes might well create future maintenance problems. 
+
+Just like code smells~\cite{RefactoringBook} might be indicators of software design problems, in the case of \derric, we conjecture, high complexity changes might indicate \textit{language design problems}. 
+For the purpose of our experiment we have identified 3 change complexity classes. 
+Below we briefly describe each class, rated as \levelGood, \levelOk or \levelBad.
+
+\begin{itemize}
+\item \textit{Single, localized edit (\levelGood)}
+The ideal situation is where a change requires a single modification of the program. 
+By implication, such a change is always localized. 
+Example: a single edit of the sequence, or the change of a single field in a structure.
+
+\item \textit{Multiple, but dependent edits (\levelOk)}
+In this case, a change requires multiple, inter-dependent edits. 
+For instance, defining a new structure, then adding a reference to it in the sequence section.
+
+\item \textit{Cross-cutting changes (\levelBad)}
+Cross-cutting changes require many (more than two) similar edits scattered across the program. 
+Such changes always involve some form of duplication. 
+This kind of changes is very bad, since they affect the program in a way that is dependent on the size of the program. 
+\end{itemize}
+The changes, categorized in the change complexity classes, provide an empirical base line to start discussing to what extent \derric supports maintenance.
+
+\section{Results\label{sect:results}}
+
+\noindent
+The results of the experiment are summarized in Table~\ref{TAB:jpegresults}, \ref{TAB:gifresults} and \ref{TAB:pngresults} for the file formats \JPEG, \GIF and \PNG respectively. 
+The first column of each table identifies the change (i.e. set of edits). 
+In the following, we will identify changes by using a combination of file format name and Id, like so: \PNG 11 denotes the eleventh change of the \PNG description in Table~\ref{TAB:pngresults}. 
+Columns 2-5 display how many edits of that particular type were required in order to decrease the number of failures.
+For instance, change \JPEG 1 involved two edits: a structure definition was added, and a reference was added to the sequence expression.
+Note that deletions are omitted from these tables since they never occurred.
+
+The actual decrease in failures is shown in the ``Errors Resolved'' column.
+Finally, the last column shows how a change was categorized with respect to change complexity.
+Revisiting change \JPEG 1 we see that it is ranked as \levelOk, which means that the change contains multiple, dependent edits.
+Hence we can conclude that the reference inserted into the sequence expression has to be a reference to the newly added structure.
+
+\newcommand{\commitdata}[8]{%
+#1 & #2 & #3 & #4 & #5 & #6 & #8 \\
+}
+
+\begin{table}[ht]
+\begin{minipage}{.48\textwidth}\centering
+\begin{tabular}{rcccccc}
+& \multicolumn{2}{c}{Structure} & \multicolumn{2}{c}{Sequence} & \multicolumn{1}{c}{Errors} & \\
+Id & Add & Mod & Add & Mod & \multicolumn{1}{c}{Resolved} & CC \\
+\midrule
+\commitdata{1}{1}{}{1}{}{520}{4965}{\levelOk}
+\commitdata{2}{}{}{1}{}{284}{4681}{\levelGood}
+\commitdata{3}{1}{}{1}{}{245}{4436}{\levelOk}
+\commitdata{4}{1}{}{1}{}{821}{3615}{\levelOk}
+\commitdata{5}{}{}{}{1}{3395}{220}{\levelGood}
+\commitdata{6}{}{}{}{1}{138}{82}{\levelGood}
+\commitdata{7}{1}{}{2}{}{46}{36}{\levelBad}
+\commitdata{8}{1}{4}{21}{}{26}{10}{\levelBad}
+\commitdata{9}{1}{}{4}{}{5}{5}{\levelBad}
+\commitdata{10}{1}{}{19}{}{3}{2}{\levelBad}
+\commitdata{11}{1}{}{2}{}{2}{0}{\levelBad}
+\midrule
+\end{tabular}
+\vspace{5pt}
+\caption{Modifications to the \JPEG description.\label{TAB:jpegresults}}
+\vspace{2.4em}
+\begin{tabular}{rcccccc}
+& \multicolumn{2}{c}{Structure} & \multicolumn{2}{c}{Sequence} & \multicolumn{1}{c}{Errors} & \\
+Id & Add & Mod & Add & Mod & \multicolumn{1}{c}{Resolved} & CC \\
+\midrule
+\commitdata{1}{}{1}{}{}{9}{380}{\levelGood}
+\commitdata{2}{}{}{1}{}{115}{265}{\levelGood}
+\commitdata{3}{}{}{1}{}{137}{128}{\levelGood}
+\commitdata{4}{}{3}{}{}{36}{92}{\levelOk}
+\commitdata{5}{}{}{1}{}{39}{53}{\levelGood}
+\commitdata{6}{}{}{}{1}{48}{5}{\levelGood}
+\commitdata{7}{}{}{}{1}{3}{2}{\levelGood}
+\commitdata{8}{}{}{2}{}{2}{0}{\levelOk}
+\midrule
+\end{tabular}
+\vspace{5pt}
+\caption{Modifications to the \GIF description.\label{TAB:gifresults}}
+\end{minipage}
+\begin{minipage}{.48\textwidth}\centering
+\begin{tabular}{rcccccc}
+& \multicolumn{2}{c}{Structure} & \multicolumn{2}{c}{Sequence} & \multicolumn{1}{c}{Errors} & \\
+Id & Add & Mod & Add & Mod & \multicolumn{1}{c}{Resolved} & CC \\
+\midrule
+\commitdata{1}{5}{}{5}{}{3136}{2653}{\levelOk}
+\commitdata{2}{1}{}{1}{}{1819}{834}{\levelOk}
+\commitdata{3}{1}{}{1}{}{332}{502}{\levelOk}
+\commitdata{4}{1}{}{1}{}{63}{439}{\levelOk}
+\commitdata{5}{1}{}{1}{}{73}{366}{\levelOk}
+\commitdata{6}{2}{}{2}{}{112}{254}{\levelOk}
+\commitdata{7}{1}{}{1}{}{144}{110}{\levelOk}
+\commitdata{8}{1}{}{1}{}{24}{86}{\levelOk}
+\commitdata{9}{}{}{1}{}{20}{66}{\levelGood}
+\commitdata{10}{}{}{1}{}{18}{48}{\levelGood}
+\commitdata{11}{}{}{}{1}{20}{28}{\levelGood}
+\commitdata{12}{1}{}{1}{}{10}{18}{\levelOk}
+\commitdata{13}{1}{}{1}{}{2}{16}{\levelOk}
+\commitdata{14}{1}{}{1}{}{9}{7}{\levelOk}
+\commitdata{15}{2}{}{2}{}{2}{5}{\levelOk}
+\commitdata{16}{}{}{1}{}{3}{2}{\levelGood}
+\commitdata{17}{1}{}{1}{}{1}{1}{\levelOk}
+\commitdata{18}{}{}{3}{}{1}{0}{\levelOk}
+\midrule
+\end{tabular}
+\vspace{5pt}
+\caption{Modifications to the \PNG description.\label{TAB:pngresults}}
+\begin{tabular}{clr}
+Level & Name & \# \\
+\midrule
+\levelGood & Single localized & 13 \\
+\levelOk & Multiple dependent & 19 \\
+\levelBad & Cross-cutting & 5 \\
+\midrule
+ & Total & 37 \\
+\end{tabular}
+\vspace{5pt}
+\caption{Changes per change complexity class\label{TAB:counteval}}
+\end{minipage}
+\end{table}
+
+\section{Analysis\label{sect:analysis}}
+
+\noindent
+To summarize the results of our experiment, Table~\ref{TAB:counteval} shows the total number of changes per complexity level.
+The table shows that the majority of changes are easily supported by \derric: 13 are simple, localized edits (\levelGood), and 19 changes require multiple, dependent edits.
+The dependency between edits in these changes is a direct consequence of separating sequence from structure definition.
+In other words: this dependency is anticipated by the design, and hence unavoidable.
+
+Only 5 changes are categorized as cross-cutting (\levelBad).
+While in the experiment these changes did not occur very frequently, they still might indicate there is room for improving the design of \derric.
+Moreover, looking at the results for \JPEG, we seem to observe a pattern of deterioration.
+Investigating the actual changes reveals that, indeed, duplication introduced by earlier changes, has a detrimental effect on the required subsequent changes.
+The fact that cross-cutting changes may amplify each other, is exactly the evolutionary effect we would like to avoid.
+Three language features could be introduced to \derric to eliminate such cross-cutting changes completely:
+\begin{itemize}
+\item Abstraction: a language construct to declare subsequences so that duplicate subsequences can be referred to by name.
+\item Padding: a construct to automatically interleave certain bytes inbetween structure references in the sequence declaration.
+\item Precedence: declaring that a particular structure has priority over another one. 
+\end{itemize}
+Below we motivate these language features based on the results of the experiment.
+
+\paragraph{Abstraction}
+
+In \JPEG 7, a newly discovered data structure \texttt{SOF1} is added to the description.
+It was discovered that it is part of a sub-sequence of structures that may occur both before and after a mandatory \texttt{SOS} structure.
+As a result, a reference to \identifier{SOF1} had to be inserted in two places.
+The relevant part of the original sequence reads as follows:
+\begin{quote}\begin{lstlisting}[language=derric]
+sequence ...
+(DQT DHT DRI SOF0 SOF2 APPX COM)*
+SOS
+(SOS DQT DHT DRI SOF0 SOF2 APPX COM)*
+\end{lstlisting}
+\end{quote}
+Note that the sequence \lstinline[language=derric]{DQT DHT DRI SOF0 SOF2 APPX COM} is duplicated. 
+An abstraction construct  would allow the description to be refactored as follows:
+\begin{quote}\begin{lstlisting}[language=derric]
+(*@\textbf{def}@*) Seq = DQT DHT DRI SOF0 SOF2 APPX COM;
+sequence ... Seq* SOS (SOS Seq)*
+\end{lstlisting}
+\end{quote}
+To accomodate the new \identifier{SOF1} structure, only the definition of \identifier{Seq} would have to be adapted.
+Such an abstraction mechanism feature would not only reduce the severity of such changes, it would also clearly communicate to readers of the description that the sequences before and after the \texttt{SOS} reference are always the same.
+
+\paragraph{Padding}
+The \JPEG 8 change clearly signals a problem: padding bytes are allowed everywhere in between structures.
+Every change that modifies the sequence will explicitly make sure that padding is maintained.
+The duplication introduced by \JPEG 7 makes the way this change is expressed even less desirable.
+A (domain-specific) padding construct allows padding to be expressed in a single place  in the configuration section:
+\begin{quote}
+\begin{lstlisting}[language=derric]
+(*@\textbf{padding}@*) 0xFF
+\end{lstlisting}
+\end{quote}
+The compiler would then weave the generic padding element into the sequence.
+
+\paragraph{Precedence}
+
+The cross-cutting change \JPEG 10 signals another language feature that could be added to \derric.
+A new structure \identifier{COMElanGmk} was identified, which functions as an alternative to the standard \identifier{COM} structure.
+The only difference from \identifier{COM} is that \identifier{COMElanGmk} redefines the contents of a single field using \derric's support for structure inheritance.
+We would, however, like to also express that \identifier{COMElanGmk} has precedence over \identifier{COM}: if it is there, consume it, \textit{otherwise} attempt to match \identifier{COM}.
+
+The current resolution involves duplicating large parts of the sequence to move the choice between either structure to a higher level.
+A proper solution would be to extend the set of sequence operators (?, *, etc.) with a new binary operator $<$.
+The precedence ordering could then be expressed simply as \lstinline[language=derric]{COMElanGmk < COM}.
+
+\section{Discussion\label{sect:discussion}}
+
+\subsection{Lessons Learned}
+
+Based on this case study, we can draw a number of conclusions that are generally applicable to the area of \DSL development and model-driven development at large. 
+First of all, in order to do evidence-based \DSL evolution, the existence of a large, representative corpus is of paramount importance. 
+Given such a corpus, it becomes possible to apply our test-based experimental approach. 
+Our results show that such an experiment indeed provides useful feedback on the design of a \DSL. 
+
+The corpus of files used in our experiment in essence represents a very large and comprehensive test suite. 
+In other domains, such a test suite has to be designed up front. 
+Nevertheless, the existence of test suites for (legacy) code, could thus be instrumental in deciding whether to adopt a model-driven approach. 
+For instance, in~\cite{mod4j} the authors perform a study whether the Mod4J framework is suitable to build web applications following a reference architecture. 
+In this case, the organization had ample experience building such web applications. 
+If (evolving) test suites for a representative sample of non-Mod4J applications exist, they can be run against Mod4J replicas to find out whether Mod4J supports the necessary evolution facilities to fix the failing tests.
+
+Second, to our surprise, the experiment showed that even a simple \DSL such as \derric requires abstraction facilities in order to mitigate future maintenance.
+Maybe \DSL{}s and modeling languages are much more like programming languages than we might think. 
+As such, our results provide a cautionary tale, which may be taken into consideration when designing a \DSL or modeling language. 
+Furthermore, it might suggest that, if such a feature is to be avoided, that graph-like, visual concrete syntax is preferrable, since it would allow the direct representation of sharing of sub-structures.
+
+Finally, since our experiment requires the accurate tracking and classification of changes to source models, textual syntax seems to be
+an advantage. 
+The textual syntax of \derric allowed us to use standard \texttt{diff} tools to get insight into what was changed inbetween revisions. 
+A visual modeling language would most certainly require custom, domain-specific difference algorithms~\cite{UMLDiff}. 
+Generic difference algorithms (on trees or graphs) would likely contain irrelevant noise, and hence would be hard to interpret.
+
+\subsection{Threats to Validity}
+
+\noindent
+Even though our classification of changes is informal, we contend that it is sufficiently intuitive.
+Proficient users of computer languages (domain-specific or general purpose) use similar reasoning to distinguish ``good'' changes from ``bad'' changes. 
+Most programmers are familiar with the principles of Don't-Repeat-Yourself (DRY) and Once-and-Only-Once (OAOO).
+These are precisely the principles that were violated in the cross-cutting changes.
+
+The changes were performed by the first author (the designer of \derric) who has ample experience in digital forensics. 
+As such, he could have tended towards the smallest and simplest changes. 
+However, in order to evaluate the way a language supports maintenance it is essential to analyze \textit{optimal} changes; only then can the language aspect be isolated.
+A subject who is less versed in the domain of digital forensics or \derric, would probably have added noise to the results (i.e. unneeded complexity in the changes), and consequently, the results would have been harder to interpret.
+
+As shown in Section~\ref{sect:experiment}, we consider the set of image files from Wikipedia a suitable test set for generating failures and harvesting changes.
+First, the set of images is constructed by thousands of users of Wikipedia, so there is no selection bias.
+Second, there is a high variability in the origin of the images and how the images were processed in user programs (Fig.~\ref{fig:software}). 
+Finally, the data set is large enough to generate realistic failures; any of the observed failures could have occurred in practice. 
+
+It could be argued that neither \JPEG, \GIF nor \PNG are rich enough to cover the full expressivity  or expose the lack thereof of \derric. 
+This might be true, however, the \derric language is designed precisely for this kind of file formats. 
+In Section~\ref{sect:experiment} we have argued that the \derric descriptions of these file formats are sufficiently different to cover the whole language.
+
+\subsection{Related Work}
+
+\noindent
+Mens et al.~\cite{evolcomplexity} define evolution complexity as the computational complexity of a metaprogram that performs a maintenance task, given a ``shift'' in requirements.
+Our classification of changes is comparable since we consider small and local edits (fewer ``steps'') to be easier than multiple, dependent and scattered edits (requiring more steps).
+Making this relation more precise, however, is an interesting direction for further research. 
+This would involve formalizing each change as a small metaprogram, and then using its computational complexity to rank the changes.
+
+Hills et al.~\cite{HillsKlintvdStormVinju2011} do a similar experiment but use an imaginary virtual machine for ``running'' maintenance scenarios encoded as simple process expressions.
+Since the changes and programs investigated in this paper are relatively small, writing them as \textit{actual} metaprograms might be practically feasible. 
+Even more so since \derric is implemented using the metaprogramming language \textsc{Rascal}~\cite{Rascal}, which is highly suitable for expressing the changes as source-to-source transformations. 
+
+The work presented in this paper can be positioned as an experiment in language evaluation.
+Empirical language evaluation is relatively new since, as pointed out by Markstrum~\cite{claims}, most language features are introduced without evidence to back up its effectiveness or usefulness.
+In the area of \DSL engineering, however, there is work on evaluating the effectiveness of \DSL{}s with respect to program understanding~\cite{MernikEtAl05}, key success factors~\cite{HermansEtAl09}, and maintainability~\cite{KlintEtAl10}. 
+Our experiment can be seen in this line of work, but focusing on how a \DSL \textit{as a language} supports evolution.
+
+Corpus-based language analysis dates at least from the '70s, but is getting more attention recently; see~\cite{favre2011empirical} for a comprehensive list of references. 
+A recent study is performed by L\"{a}mmel and Pek.~\cite{p3p}. 
+The authors have collected over 3,000 privacy policies expressed in the P3P language in order to discover how the language is used and which features are used most.
+Morandat et al.~\cite{rlang} gather a corpus of over 1,000 programs written in R to evaluate some of the design choices in its implementation.
+A difference with respect to our work, however, is that corpus-based language analysis focuses on a corpus of \textit{source files}.
+Instead, in this paper we used a corpus of \textit{input files} to trigger realistic failures, \textit{not} to analyze the usage of language features, but to analyze how these features fare in the face of evolution.
+
+\section{Conclusion\label{sect:conclusion}}
+
+\noindent
+\DSL{}s can greatly increase productivity and quality in software construction. 
+They are designed so that the common maintenance scenarios are easy to execute.
+Nevertheless, there might be changes that are impossible or hard to express.
+In this paper we have presented an empirical experiment to discover whether \derric, a \DSL for describing file formats, supports the relevant corrective maintenance scenarios.
+
+We have run three \derric descriptions of image formats on a large and representative set of image files. 
+When file recognition failed, the descriptions were fixed. 
+This process was repeated until no more failures were observed. 
+The required changes, as recorded in version control, were categorized and rated according to their complexity.
+
+Based on the results we have identified to what extent \derric supports maintenance of file format descriptions. 
+The results show that most of the changes are easily expressed.
+However, the results also show there is room for improvement: three features should be added to the language. 
+The most important of those is a mechanism for abstraction to factor out commonality in \derric syntax definitions.
+
+Our experimental approach can be applied in the context of other \DSL{}s. 
+The only requirement is a representative corpus of inputs that will trigger realistic failures in the execution of \DSL programs and a way to classify and rank the changes required to resolve the failures.
+By fixing the \DSL programs, tracking and ranking the required changes, it becomes possible to observe how seamless (or painful) actual maintenance would be.
+We consider the experiment presented in this paper as a first step towards evidence-based \DSL evolution.
+
+\bibliographystyle{splncs03}
+\bibliography{bibliography}
+
+\end{document}

@@ -1,0 +1,79 @@
+Our work targets at voice and key-strokes driven telephony services. These services normally run on the
+infrastructure of the service provider. Subsection~\ref{sec:JSLEE} reviews a standard (JAIN SLEE) that can be used for building
+this kind of applications, while subsection~\ref{sec:umbra-framework} introduces a Java framework built atop JAIN SLEE
+which provides higher-level abstractions and true portability across SLEE implementations.
+
+%---------------------------------------------------------
+\subsection{JAIN SLEE}\label{sec:JSLEE}
+%---------------------------------------------------------
+
+JAIN SLEE is a standard by the Java Community Process that describes
+a Service Logic and Execution Environment (SLEE) architecture~\cite{JAINSLEE}.
+This architecture defines a component model for structuring the logic of communications applications
+as a collection of object-oriented components (called Service Building Blocks, SBBs), which can be composed into
+services. The SLEE architecture also defines the contract between these components
+and the container that will host them at runtime. 
+JAIN SLEE applications are event-driven, which means that methods of the application are invoked when
+suitable events arrive. In this way, each SBB to be deployed in the SLEE identifies the event types 
+that accepts, and defines event handler methods with code to process such event types. 
+
+The framework provides an API for handling events, resources and connections, facilities like timers 
+and alarms, and standard interfaces to be implemented by SBBs. Still, the API is low-level, and 
+service developers would benefit from higher-level abstractions, tailored to voice-driven telephony 
+services, as explained in the next subsection.
+
+%-------------------------------------------------------------------------------
+\subsection{The Umbra Framework}\label{sec:umbra-framework}
+%-------------------------------------------------------------------------------
+
+The {\em Umbra framework} hides the low-level details of JAIN SLEE to enhance performance and simplify 
+the development of telephony services. It masks the JAIN SLEE components behind a simpler Java API that offers 
+enhanced, scalable, carrier-grade performance. Another benefit is portability. As different providers offer 
+different implementations of the standard, there may be JAIN SLEE compliant applications that do not run 
+on every SLEE container. Moreover, when migrating an application from one vendor to another, parts
+of its code may need to be re-written to ensure smooth porting and compatibility. With the {\em Umbra 
+framework}, the code works across JAIN SLEE platforms from the main vendors without any recoding.
+
+The framework enables building applications mixing both web and telephony services.
+While JAIN SLEE can deal with low-level protocol issues at the back-end, a J2EE environment can provide a 
+front-end for Internet services. Hence, {\em Umbra} enables the SLEE to offer web services the J2EE world can interact with.
+%so that the J2EE world can interact with the network capabilities exposed by the SLEE.
+
+Fig.~\ref{fig:UmbraStructure} shows the typical structure of a service built with the {\em Umbra framework}. 
+The upper part shows only the most relevant interfaces provided by the framework. The lower part (package 
+{\em application}) presents a schema of the classes and interfaces that programmers have to develop. 
+As we will see, {\em Umbra} is based on the definition of suitable event types and listeners for such events. The
+listeners contain call-back methods, invoked upon the reception of the events, which need to be programmed
+by the service developers.
+
+\figeps{UmbraStructure}{0.42}{Structure of an application using the {\em Umbra framework} (simplified).}
+
+A service is started upon the reception of the {\em onBootstrap} event. Hence, the developer needs to 
+implement code to react to this event in the {\em BootStrapEventListener}. Normally, 
+this code includes loading the needed resources and register event listeners  
+through a {\em ServiceLocator}, especially {\em SessionRequest} events, which are events triggered by 
+the SLEE container when the network requests a new session. Then, the service waits for incoming events, which
+may trigger specific actions like playing a message, recording a message, soliciting the user to press a key,  
+and so on. These actions are supported by an {\em IVRServer} (a media server), which is a resource
+that needs to be identified upon bootstrap. The service will receive an event notification upon completion of the 
+actions, as declared in the {\em IvrServerEventListener}. For example, the {\em onPlayed} method will be 
+called upon completion of a {\em play} action, which plays a voice message.
+
+Practice has shown that a suitable organization for event-driven applications is through state machines.
+Hence, a typical programming idiom for services built with the {\em Umbra} framework is the {\em State 
+pattern}~\cite{Gamma} in order to describe the different execution states of the service, the possible 
+incoming events, the actions to be performed upon the arrival of events, and the state changes. This way,
+services normally define an interface {\em State} declaring all possible events, while the abstract class 
+{\em AbstractState} defines default empty implementations for the event handlers. Therefore, developers 
+have to create a subclass of {\em AbstractState} per application state ({\em State1} in Fig.~\ref{fig:UmbraStructure}), 
+and override the methods for the events accepted by the state.
+
+This organization is a Java implementation of a natural way of designing services as state machines. 
+However, this style of programming is not enforced by the {\em Umbra framework}
+even though it is common practice. Hence, we decided to provide developers with a higher level representation of this pattern, closer
+to the abstractions of state machines. This way, the gap from design to implementation would be smaller. 
+Moreover, this representation would facilitate the communication with customers, most frequently
+non-technical people. The next section introduces a Domain-Specific Visual Language that helps in describing 
+services at a higher level of abstraction.
+
+

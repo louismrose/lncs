@@ -1,0 +1,207 @@
+\section{A Technical Realization of the Shared Process Model}
+\label{sec:realization}
+
+\begin{wrapfigure}{r}{6.4cm} %[15]
+{\small
+\centering
+\vspace{-0.7cm}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[scale=\scaleA]{SimplifiedClaimHandlingWithLinksSchema.png} %bb=509 272 118 491,
+\caption{ The Shared Process Model as a combination of two individual models, coupled by correspondences \label{fig:SharedModel}}}
+\vspace{-1.5cm}
+\end{wrapfigure}
+In this section, we present parts of a technical realization of the concepts and requirements from Sect.~\ref{sec:requirements} as we have designed and implemented them.
+%
+%-----------------------------------------------------------------------
+\subsection{Basic Solution Design}
+
+
+We represent the Shared Process Model by maintaining two process models, one for each view, together with
+\emph{correspondences} between their model elements, as illustrated by Fig.~\ref{fig:SharedModel}. In the upper part, the process model for business is shown, in the lower part the process model for IT.
+A \emph{correspondence}, shown by red dashed lines, is a bidirectional relation between one or more elements of one model and one or more elements of the other model.
+
+For example, in Fig.~\ref{fig:SharedModel}, task B of the business layer corresponds to task B' of the IT layer which is an example for a one-to-one correspondence. Similarly, task D of the business layer corresponds to subprocess D' of the IT layer and tasks $A_1$ and $A_2$ correspond to the (human) task $A$ of the IT layer which is an example for a many-to-one correspondence. Many-to-many correspondences are technically possible but we haven't found a need for them so far. We only relate the main flow elements of the model, i.e., activities, events and gateways, but sequence flow is not linked. Each element is contained in at most one correspondence. An element that is contained in a correspondence is called a \emph{shared} element, otherwise it is a \emph{private} element.
+
+Alternatively, we could have chosen to represent the Shared Process Model differently by merging the business and IT views into one common model with overlapping parts being represented only once. This ultimately results in an equivalent representation, but we felt that we stay more flexible with our decision above in order to be able to easily adapt the precise relationship between business and IT views during further development.
+
+\forget{
+as a BPMN 2 metamodel extension or an entirely new metamodel. This however would have fixed much more the relationship of different modeling elements in the two views, which is the aspect in which we would like to maintain maximal flexibility during research. In particular, we would like to be flexible regarding what precise notions of business-IT consistency, i.e., allowed combination of correspondences and sequence flow, we would like to support. This is easier when separating correspondences from the sequence flow. 
+}
+
+Furthermore, with our realization of the Shared Process Model we can easily support the following:  
+%
+\begin{itemize}
+
+\item Import/export to/from the Shared Process Model: From the Shared Process Model, a process model must be created (e.g. business view) that can be shown by an editor. This is straight-forward in our representation. We use BPMN 2 internally in the Shared Process Model, which can be easily consumed outside by existing editors. Likewise, other tools working on BPMN 2 can be leveraged for the Shared Process Model prototype easily.
+
+\item Generalization to a Shared Process Model with more than two process models is easier to realize with correspondences rather than with a merged metamodel. This includes generalization to three or more stakeholder views, but also when one business model is implemented by a composition of multiple models (see Sect.~\ref{sec:BITGap1}) or when a business model should be traced to multiple alternative implementations.
+
+\end{itemize}
+
+
+The technical challenges occur in our realization if one of the process models evolves under changes because then the other process model and the correspondences have to be updated in an appropriate way.%\HVO{Refine}
+
+
+%-----------------------------------------------------------------------
+\subsection{Establishing and Maintaining Correspondences}
+
+A possible initialization of the Shared Process Model is with a single process model, which can be thought of the initial business view. This model is then internally duplicated to serve as initially identical business and IT models. This creates one-to-one correspondences between all main elements of the process models for business and IT. The creation of such correspondences is completely automatic because in this case a correspondence is created between elements with the same universal identifier during the duplication process. Another possible initialization is with a pair of initial business and IT views where the two views are not identical, e.g. they might be taken from an existing project situation where the processes at different abstraction levels already exist. In such a case, the user would need to specify the correspondences manually or process matching techniques can be applied to achieve a higher degree of automation~\cite{Branco12}.
+
+A one-to-many or many-to-one correspondence can be introduced through an  editing wizard. For example, if an IT architect decides that one business activity is implemented by a series of IT activities, he uses a dedicated wizard to specify this refinement. The wizard forces the user to specify which activity is replaced with which set of activities, hence the wizard can establish the one-to-many correspondence.
+
+The Shared Model evolves either through such wizards, in which case the wizard takes care of the correspondences, or through free-hand editing operations, such as deletion and insertion of tasks. When such changes are checked into the Shared Model as public changes, the correspondences need to be updated accordingly. For example, if an IT architect introduces several new activities that are business-relevant and therefore designated as public changes, the propagation to the business level must also include the introduction of new one-to-one correspondences. Similarly, if an IT architect deletes a shared element on the IT level, a correspondence connected to this shared element must be removed when propagating this change.
+
+
+%-----------------------------------------------------------------------
+\subsection{Business-IT Consistency}
+
+As described in Sect.~\ref{sec:requirements2}, we distinguish coverage and preservation of behavior. Coverage can be easily checked by help of the correspondences. Every private element, i.e., every element that is not contained in a correspondence must be accounted for. For example, all private business tasks, if any, could be marked once by the business analyst and all private IT tasks by the IT architect. The Shared Process Model then remembers these designations. A governance rule implemented on top may restrict who can do these designations. All private tasks that are not accounted for violate coverage.
+
+For preservation of behavior, we distinguish \emph{strong and weak consistency} according to the IT refinement patterns discussed in Sect.~\ref{sec:BITGap1}. If business and IT views are strongly consistent, then they generate the same behavior. If they are weakly consistent, then every behavior of the IT view is a behavior of the business view, but the IT view may have additional behavior, for example, to capture additional exceptional behavior. As with coverage, additional behavior in the IT view should be explicitly reviewed to check that it is indeed considered technical exception behavior and not-considered `business-relevant'. 
+
+We use the following concretizations of strong and weak consistency here. At this stage, we only consider behavior generated by the abstract control flow, i.e., we do not yet take into account how data influences behavior.
+
+
+\begin{itemize}
+
+	\item We define the Shared Process Model to be \emph{strongly consistent} if the IT view can be derived from the business view by applying only operations from the first three categories in Sect.~\ref{sec:BITGap1}: complementary implementation detail, formalization and renaming, and behavioral refinement and refactoring. Private tasks in either view are compatible with consistency only if they are connected to shared elements by a path of sequence flow. 
+	The operations from the first three categories all preserve the behavior. The Shared Process Model in Fig.~\ref{fig:SharedModel} is not strongly consistent because the IT view contains private boundary events. Without the boundary events and without activity $Y$, the model would be strongly consistent. Fig.~\ref{fig:Inconsistencies} shows examples for violating strong consistency. 	
+	
+	An initial Shared Process Model with two identical views is strongly consistent.
+	To preserve strong consistency, all flow rearrangements on one view, i.e., moving activities, rearranging sequence flow or gateways must be propagated to the other view as public changes.
+
+	\item For \emph{weak consistency}, we currently additionally allow only IT-private error boundary events leading to IT private exception handling. Technically we could also allow additional IT-private gateways and additional branches on shared gateways here, but we haven't yet seen a strong need for them. The Shared Process Model in Fig.~\ref{fig:SharedModel} is weakly consistent. The examples in Fig.~\ref{fig:Inconsistencies} also violate weak consistency.
+	
+\end{itemize}
+
+\begin{figure}[b]
+\vspace{-0.5cm}
+\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[scale=\scaleA]{Consistency.png} %bb=509 272 118 491,
+\caption{Examples of inconsistencies}
+\label{fig:Inconsistencies}
+\end{center}
+\end{figure}	
+
+We have used the simplest notion(s) of consistency such that all the refinement patterns we have encountered so far can be dealt with. We haven't yet seen, within our usage scenarios, the need for more complex notions based on behavioral equivalences such as trace equivalence or bisimulation.
+
+Strong and weak consistency can be efficiently checked but the necessary algorithms and also the formalization of these consistency notions are beyond the scope of this paper\footnote{For strong consistency, one has to essentially check that the correspondences define a \emph{continuous} mapping between the graphs as known in graph theory.}.
+%
+The automatic propagation of public changes, which we will describe in the following sections, rests on the Shared Process Model being at least weakly consistent.
+
+ 
+
+%-----------------------------------------------------------------------
+\subsection{Computing Changes between Process Models}
+
+If the Shared Process Model evolves by changes on the business or IT view, then such changes must be potentially propagated from one view to the other. As a basis for our technical realization of the Shared Process Model, an approach for \emph{ compare and merge} of process models is used~\cite{KuesterGFE08}. We use these compound operations because they minimize the number of changes and represent changes on a higher level of abstraction. This is in contrast to other approaches for comparing and merging models which focus on computing changes on each model element. 
+
+Figure~\ref{fig:ChangeOps} shows the change operations that we use for computing changes. InsertActivity, DeleteActivity and MoveActivity insert, delete and move activities or other elements such as events and subprocesses. InsertFragment, DeleteFragment and MoveFragment is used for inserting, deleting and moving fragments which represent control structures. The computation of a ~\emph{change script} consisting of such compound operations is based on comparing two process models and their  Process Structure Trees. For more details of the comparison algorithm, the reader is referred to~\cite{KuesterGFE08}.
+
+
+\begin{figure}[h]
+\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[bb=780 270 31 528,scale=0.53]{Operations.pdf}
+\caption{Change operations according to~\cite{KuesterGFE08}}
+\label{fig:ChangeOps}
+\end{center}
+\end{figure}
+
+%\begin{figure}[b]
+%\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+%\includegraphics*[scale=\scaleB]{Operations.png} %bb=509 272 118 491,
+%\caption{Change operations according to~\cite{KuesterGFE08}}
+%\label{fig:ChangeOps}
+%\end{center}
+%\end{figure}
+
+
+
+\begin{figure}[t]
+\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[scale=\scaleB]{ClaimHandlingQuadWithLinks.png} %bb=509 272 118 491,
+\caption{Example of a change script on the IT level that is propagated to the business level}
+\label{fig:Quad1}
+\end{center}
+\end{figure}
+
+As an example for an evolution scenario of the Shared Process Model, consider Figure~\ref{fig:Quad1}. The left hand side shows a part of the initial state of the Shared Process Model in our scenario, which contains a 2-to-1 correspondence and a private IT task. So, some IT refinements have been done already. Assume now, that during IT refinement, the IT architect realizes that, in a similar process that he has implemented previously, there was an additional activity that checks the provided customer details against existing records. He is wondering why this is not done in this process and checks that with the business analyst, who in turn confirms that this was just forgotten. Consequently, the IT architect now adds this activity together with a new loop to the IT view, resulting in a new IT view shown in the lower right quadrant of Fig.~\ref{fig:Quad1}. Upon checking this into the Shared Process Model as a public change, the business view should be automatically updated to the model shown in the upper right quadrant of Fig.~\ref{fig:Quad1}. 
+
+To propagate the changes, one key step is to compute change operations between process models in order to obtain a \emph{change script} as illustrated in Fig.~\ref{fig:Quad1}. In the particular example, we compute three compound change operations: the insertion of a new empty fragment containing the two XOR gateways and the loop ($InsertFragment$), the insertion of a new activity ($InsertActivity$) and the move of an activity ($MoveActivity$), illustrated by the change script in Figure~\ref{fig:Quad1}. In the next section, we explain how we use our approach to realize the evolution of the Shared Process Model.
+
+
+
+
+%-----------------------------------------------------------------------
+\subsection{Evolution of the Shared Process Model}
+
+For private changes, only the model in which the private changes occured is updated. In the following, we explain how public changes are propagated from IT to business, the case from business to IT is analogous. 
+ 
+\begin{figure}[t]
+\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[bb=721 331 0 524,scale=0.45]{EvolutionSchema.pdf} %
+\caption{Delta computation for propagating changes}
+\label{fig:Deltas}
+\end{center}
+\end{figure}
+
+
+When a new IT view is checked into the Shared Process Model, we first compute all changes between the old model IT and the new model IT', giving rise to a change script $Delta_{IT}$, see Figure~\ref{fig:Deltas} (a). The change script is expressed in terms of the change operations introduced above, i.e., $Delta_{IT} = \langle op_1,...,op_n \rangle$ where each $op_i$ is a change operation. In order to propagate the changes to the business level, $Delta_{IT}$ is translated into a change script $Delta_B$ for the business-level.
+This is done by translating each individual change operation $op_i$ into an operation $op_i^T$ and then applying it to the business-level. Likewise, we also apply each change operation on the IT-level to produce intermediate process models for the IT level. Overall, we thereby achieve a synchronous evolution of the two process models, illustrated in Figure~\ref{fig:Deltas} (b). 
+
+
+\begin{algorithm}
+{\small
+\caption{Translation of a compound operation $op$ from process model $IT$ to Business model $B$}
+\label{alg:translation}
+
+
+\begin{algorithmic}
+\STATE \textbf{Step 1: compute corresponding parameters of the operation $op$ }
+\STATE \textbf{Step 2: replace parameters of $op$ with corresponding parameters to obtain $op^T$ }
+\STATE \textbf{Step 3: apply $op^T$ to $B$, apply $op$ to $IT$}
+\STATE \textbf{Step 4: update correspondences between $B$ and $IT$}
+\end{algorithmic}
+}
+\end{algorithm}
+
+Algorithm~\ref{alg:translation} describes in pseudo-code the algorithm for translating a compound operation from IT to business. The algorithm for translation from business to IT can be obtained by swapping business and IT. Overall, one key step is replacing parameters of the operation from the IT model by parameters of the business model according to the correspondences. For example, for translating a change $InsertActivity(x,a,b)$, the parameters $a$ and $b$ are replaced according to their corresponding ones, following the correspondences in the Shared Process Model. In case that $a$ and $b$ are private elements, this replacement of elements requires forward/backward search in the IT model until one reaches the nearest shared element (Step 1 of the algorithm). Similarly, for translating an $InsertFragment(f,a,b)$, the parameters $a$ and $b$ are replaced in the same way. An operation $DeleteActivity(x)$ is translated into $DeleteActivity(x')$ (assuming here that $x$ is related to $x'$ by a one-to-one correspondence). After each translation, in Step 3 the change operation as well as the translated change operation are applied to produce new models $B_i$ and $IT_i$, as illustrated in Figure~\ref{fig:Deltas} (b). Afterwards, Step 4 updates the correspondences between the business and IT model. For example, If $x$ is the source or target of a one-to-many/many-to-one correspondence, then all elements connected to it must be removed.
+
+For the example in Figure~\ref{fig:Quad1}, the change script $Delta_{IT}$ is translated iteratively and applied as follows:
+
+{\small
+\begin{itemize*}
+
+\item The operation \emph{InsertFragment(f, `Get Request Details', `Log Session Data')} is translated into \emph{InsertFragment(f, `Get Insurance Details', `Validate Claim')}.
+The operation as well as the translated operation are applied to the IT and business model, respectively, to produce the models $IT_1$ and $B_1$, and also the correspondences are updated. In this particular case, new correspondences are created e.g. between the control structures of the inserted fragments.
+
+\item The operation \emph{InsertActivity(`Check Consistency with Records', Merge, Decision)} is translated into \emph{InsertActivity(`Check Consistency with Records', Merge, Decision)}, where the new parameters now refer to elements of the business model. These operations are then also applied, in this case to $IT_1$ and $B_1$, and correspondences are updated.
+
+\item The operation \emph{MoveActivity(`Get Request Details', Merge, `Check Consistency with Records')} is translated into \emph{MoveActivity(`Get Request Details', Merge, `Check Consistency with Records')}, where the new parameters now refer to elements of the business model. Again, as in the previous steps, the operations are applied and produce the new Shared Process Model consisting of $B'$ and $IT'$.
+
+\end{itemize*}
+}
+
+In general, when propagating a change operation, it can occur that the insertion point in the other model cannot be uniquely determined. For example, if a business user inserts a new task between the activity \emph{`Get Insurance Details'} and \emph{`Validate Claim'} in Fig.~\ref{fig:Quad1}, then this activity cannot be propagated to the IT view automatically without user intervention. In this particular case, the user needs to intervene to determine whether the new activity should be inserted before or after the activity \emph{`Log Session Data'}.
+
+\forget{
+\begin{wrapfigure}[10]{r}{5.5cm} %[10] number of lines that the figure needs
+{\small
+\centering
+\vspace{-20pt}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[scale=0.35]{ClaimHandlingQuad2WithLinks.png} %bb=509 272 118 491
+\caption{Another evolution example \label{fig:Quad2}}}
+\end{wrapfigure}
+%
+The use of compound operations simplifies the translation of changes. Furthermore, we can also ensure that certain control structures are present both in the business and IT layer of the Shared Process Model. For example, if a fragment is inserted and in this fragment a task is inserted, then we require that also the surrounding fragment is inserted. This is possible using compound operations as they capture changes on a high abstraction level. An example is shown in Figure~\ref{fig:Quad2}. Here, the insertion of the activity $B$ on the IT level as a shared activity requires that also the control structure is propagated to the business level.
+}
+
+In addition to computing changes and propagating them automatically, in many scenarios it is required that before changes are propagated, they are approved from the stakeholders. In order to support this, changes can first be shown to the stakeholders and the stakeholders can approve/disapprove the changes. Only approved changes will then be applied. Disapproved changes are handed back to the other stakeholder. They will then have to be handled on an individual basis. Such a change management can be realized on top of our change propagation.
+
+

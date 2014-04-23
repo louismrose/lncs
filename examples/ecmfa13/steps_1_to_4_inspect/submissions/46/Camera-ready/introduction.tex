@@ -1,0 +1,32 @@
+\section{Introduction}
+
+In Model Driven Engineering (MDE), developers of complex software systems create and transform models using model authoring and transformation technologies.
+%Model transformations are used to facilitate interoperability among models expressed in different modeling languages.  
+The rise in the number of new modeling languages, however, presents a challenge because it requires software engineers to create complex transformations that manipulate models expressed in the new languages. Building these transformations from scratch requires significant effort. To address this problem, various approaches \cite{Steel07}\cite{Varro04}\cite{Cuccuru07}\cite{Sanchez08}\cite{deLara10} have recently been proposed to facilitate the reuse of model transformation across different languages.  
+%There is thus a need for MDE approaches that provide support for model transformation reuse.
+
+Model substitutability rules that are based on model typing \cite{Steel07} can be used to support model transformation reuse.
+%Model substitutability can be achieved through the subtyping relation between two model types.
+For example, a subtyping relation that supports model substitutability allows a model typed by A to be safely used where a model typed by B is expected, where B is the supertype of A.
+The transformation used for models typed by B can thus be reused on models typed by A.
+
+Current approaches to model type definition and implementation, however, only consider MOF-based metamodels as model types. 
+In MOF, contracts (e.g., pre-conditio-ns, post-conditions and invariants) are externally defined, that is, they are defined in another language, for example, the Object Constraint Language (OCL) \cite{OCL}. 
+Neither the original paper on model typing \cite{Steel07} nor the follow-up paper \cite{ecmfa12} considers externally defined contracts in subtyping relations. This limits the utility of model subtyping in model-based software development approaches that  are contract based (e.g., design by contract \cite{meyer1992applying}).
+There is thus a need for model typing that provides support for typing models with contracts.
+
+In this paper we propose a form of model typing that supports contract-aware substitutability, where contracts are defined in terms of invariants and pre-/post-conditions expressed using OCL. 
+We add invariants to model types that specify additional structural properties, and use operation pre-/post-conditions to specify the transformation rules on model types. 
+We also describe a technique for rigorously reasoning about the substitutability of models with contracts.
+ 
+The rest of the paper is organized as follows. 
+Section \ref{examples} illustrates the need for contract-aware substitutability using motivating examples from the high-performance 
+embedded system design domain.
+Section \ref{background} presents background material needed to understand the work described in this paper.
+Section \ref{contribution} presents a formal definition  of the subtyping relation between two model types that include contracts, 
+and describes tool support for reasoning about substitutability on model types.
+Section \ref{discussion} describes limitations of the approach.
+Section \ref{relatedwork} discusses related work, and Section \ref{conclusion} concludes the paper with a discussion of planned future work. 
+%The interest to make contract-aware the class matching algorithm is twofold:
+%- invariants: in the definition/checking of the subtyping relation. Until now, the subtyping relation was defined between 2 MOF metamodels. This relation will now be defined between 2 MOF+OCL metamodels (considering now the Well Formedness Rules in the metamodel, in addition to the object-oriented structure provided by the MOF classes and references).
+%- pre-/post-conditions: in the checking of the subtyping relation. The consideration of the pre- and post-conditions will make possible the redefinition (and not only the reuse) of operation (i.e., model transformation in our case), being able to check the behavioral substitutability based on an axiomatic specification of what the operation do. Transformation rules pave the way of behavioral substitutability for model transformation specialization.

@@ -1,0 +1,23 @@
+Dear reviewers and chairs,
+
+Please find a revised version of our submitted paper 63 entitled:
+"Applying a Def-Use approach on signal exchange to implement SysML Model-Based Testing"
+Authors: F.Ambert, F.Bouquet, J.Lasalle, B.Legeard, F.Peureux
+
+We have made the required revisions on the basis of all the referee comments. In the sequel, we give some precisions about the main updates:
+
+- the last paragraph of intrduction has been rewritten to be more precise about the contribution of the paper (i.e. the test criteria to select relevant test cases from SysML test model).
+
+- in Section 2, several rephrasings have been made to avoid the bad interpretation "more abstract implies less formal" 
+
+- Section 3 (in particular section 3.1) has been modified to avoid the confusion between lack of UML4MBT and lack of UML regarding embedded system modeling.
+
+- Section 6 about toolchain and experimental results has drastically been extended, especially to introduce the case studies in a deeper way and to be more precise about the contributions of the proposed test selection criterion. For that, a table containing metrics and test results has been added, and these results are discussed.
+
+- To have more place, ans as suggested by the reviewer 1, Figure 2 of the previous version has been deleted, and Figures 4 and 5 has been combined (however, we keep both Figures 1 and 9: they are far away, and Figure 1 gives, at the beginning of the paper, a clear view of the MBT architecture for the lay people). 
+
+
+Finally, we would like to sincerely thank the anonymous reviewers for their useful feedback on the submitted version of this paper, and their many helpful comments to improve it. 
+
+Best regards,
+The Authors.

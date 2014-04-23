@@ -1,0 +1,123 @@
+%%This is a very basic article template.
+%%There is just one section and two subsections.
+\documentclass{template/llncs}
+
+%\usepackage{lineno}
+\usepackage{amssymb}
+\usepackage{graphicx}
+% declare the path(s) where your graphic files are
+\graphicspath{{./pictures/}}
+% and their extensions so you won't have to specify these with
+% every instance of \includegraphics
+\DeclareGraphicsExtensions{.pdf}
+\usepackage{color}
+
+% Needed for next-to-each-other figures
+\usepackage{subfig} 
+
+% Needed for top and bottom rules
+\usepackage{booktabs}
+
+% Needed for text rotation in tables
+\usepackage{rotating} 
+ 
+% Needed for lightning symbol
+\usepackage{wasysym}
+
+% Needed for striking out text or formula from bottom left to top right
+\usepackage{cancel}
+
+\usepackage{upgreek}
+
+\usepackage{pgfplots}
+ 
+\usepackage{multirow}
+\usepackage{url}
+% enables to use rotated text (defined in package 'rotating') in rows of tables defined in command 'tabular::multicolumn' 
+\usepackage{array}
+\newcolumntype{v}[2]{%
+  >{\begin{turn}{#1}\begin{minipage}{#2}\raggedright\hspace{0pt}}l%
+  <{\end{minipage}\end{turn}}%
+}
+
+\usepackage{enumitem}
+
+\usepackage{listings}  % um Code-Fragmente darzustellen
+
+% dotted lightning (to be used within math-environments)
+\newcommand*{\dotlightning}[0]{\cdot$\lightning$\cdot}
+% alternate symbol of dotted lightning (to be used within math-environments)
+\newcommand*{\dotlightningAlt}[0]{\cdot$f$\cdot}
+% dotted x (to be used within math-environments)
+\newcommand*{\dotx}[0]{\dot{\times}}
+
+\newcommand{\dotl}[0]{\lessdot}
+\newcommand{\dotg}[0]{\gtrdot}
+\newcommand{\triple}[3]{#1_S \stackrel{#2}{\leftarrow} #1_C \stackrel{#3}{\rightarrow} #1_T}
+\newcommand{\TGG}[0]{\mathcal{L}(TGG)}
+
+\newcommand{\stereotype}[1]{{\small$\ll$}#1{\small$\gg$}}
+
+\newcommand{\TODO}[1]{\textcolor{red}{TODO: #1}}
+% data structure 
+\renewcommand{\O}[0]{{\Upomega}}
+
+% precedence function
+\newcommand{\PF}[0]{\mathcal{PF}}
+
+% precedence sequence
+\newcommand{\PS}[1]{\mathcal{PS}(#1)}
+\newcommand{\PSp}[2]{{#2}(\PS{#1})}
+
+\hyphenation{Spe-ci-fi-ca-tions e-mer-ging}
+
+\begin{document}
+
+\mainmatter
+\title{Model-based Generation of Run-time Monitors for AUTOSAR}
+\author{Lars Patzina\inst{1}%
+\and Sven Patzina\inst{1}
+\and Thorsten Piper\inst{2}
+\and Paul Manns\inst{2}}
+
+\institute{Real-Time Systems Lab, Technische Universit\"{a}t Darmstadt, Darmstadt, Germany\\
+\email{\{sven.patzina, lars.patzina\}@es.tu-darmstadt.de}
+\and
+DEEDS Group, Technische Universit\"{a}t Darmstadt, Darmstadt, Germany\\
+\email{\{piper, manns\}@cs.tu-darmstadt.de}}
+
+\maketitle
+
+%\begin{linenumbers}
+
+\begin{abstract}
+Driven by technical innovation, embedded systems, especially in vehicles, are becoming increasingly interconnected and, consequently, have to be secured against failures and threats from the outside world.
+One approach to improve the fault tolerance and resilience of a system is run-time monitoring.
+AUTOSAR, the emerging standard for automotive software systems, specifies several run-time monitoring mechanisms at the watchdog and OS level that are neither intended, nor able to support complex run-time monitoring.
+This paper addresses the general challenges involved in the development and integration of a model-based generation process of complex run-time security and safety monitors.
+A previously published model-based development process for run-time monitors based on a special kind of Petri nets is enhanced and tailored to fit seamlessly into the AUTOSAR development process.
+In our evaluation, we show that efficient monitors for AUTOSAR can be directly modeled and generated from the corresponding AUTOSAR system model.
+    
+
+%Defining a complete monitor specification with this language is a very complex task, because every LSC stands for its own and has to define its preconditions itself.
+ 
+%Furthermore, the generated monitor based on the specification monitors every signature described as LSC all the time, which leads to a not acceptable run-time behavior. 
+ 
+\keywords{AUTOSAR, extended live sequence charts, model-based, monitor petri nets, run-time monitoring, signatures }
+\end{abstract}
+
+%Intro
+\input{sections/Introduction}
+\input{sections/RelatedWork}
+\input{sections/TheMBSecMonFramework}
+\input{sections/Evaluation}
+\input{sections/Conclusion}
+% use section* for acknowledgement
+\subsubsection*{Acknowledgements.}
+This work was supported by CASED (www.cased.de).
+
+\bibliographystyle{template/splncs03}
+\bibliography{ECMFA2013}
+
+%\end{linenumbers}
+\end{document}

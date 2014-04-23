@@ -1,0 +1,67 @@
+\section{Requirements for a Shared Process Model}
+\label{sec:requirements}
+
+%-----------------------------------------------------------------------
+\subsection{The Shared Process Model Concept}
+
+The \emph{Shared Process Model}, which we now present, has the capability to synchronize process model views that reside on different abstraction levels.
+The concept is illustrated by Fig.~\ref{fig:SharedModel-Concept}. The Shared Process Model provides two different views, a business view and an IT view, and maintains the consistency between them. A current view can be obtained at any time by the corresponding stakeholder by the `get' operation. A view may also be changed by the corresponding stakeholder. With a `put' operation, the changed view can be checked into the Shared Proess Model, which synchronizes the changed view with the other view.
+
+\begin{figure}[bt]
+\begin{center}
+% x1 y1 x2 y2  (x1, y1) ist rechts unten (x2, y2) links oben
+\includegraphics*[bb=652 256 70 421,scale=0.5]{SharedModel-Schematic.pdf} % 
+\caption{Process view synchronization via a Shared Process Model}
+\label{fig:SharedModel-Concept}
+\end{center}
+\end{figure}
+
+Each view change can be either designated as a \emph{public} or a \emph{private} change. A \emph{public} change is a change that needs to be reflected in the other view whereas a \emph{private} change is one that does not need to be reflected. For example, if an IT architect realizes, while he is working on the refinement of the IT model, that the model is missing an important business activity, he can insert that activity in the IT model. He can then check the change into the Shared Process Model, designating it as a public change to express that the activity should be inserted in the business view as well. The Shared Process Model then inserts the new activity in the business view automatically at the right position, i.e., every new business view henceforth obtained from the Shared Process Model will contain the new activity. If the IT architect designated the activity insertion as a private change, then the business view will not be updated and the new activity will henceforth be treated by the Shared Process Model as an `IT-only' activity.
+
+Fig.~\ref{fig:SharedModel-Concept} also illustrates the main three status conditions of a Shared Process Model: \emph{business conformance, IT conformance and Business-IT consistency}. The business view is \emph{business conform} if it is approved by the business analyst, i.e., if it reflects the business requirements. This should include that the business view passes basic validity checks of the business modeling tool. The IT view is \emph{IT conform} if it is approved by the IT architect, i.e., if it meets the IT requirements. This should include that the IT view passes all validity checks of the IT modeling tool and the execution engine. \emph{Business-IT consistency} means that the business view faithfully reflects the IT view, or equivalently, that the IT model faithfully implements the business view. 
+
+In the remainder of this section, we discuss the requirements and capabilities of the Shared Process Model in more detail.
+
+
+
+%-----------------------------------------------------------------------
+\subsection{Usage Scenarios and Requirements}
+\label{sec:requirements2}
+
+We distinguish the following usage scenarios for the Shared Process Model. In the \emph{presentation} scenario, either the business or IT stakeholder can, at any time, obtain a current state of his view with the `get' operation. The view must reflect all previous updates, which may have been caused by either stakeholder.
+
+The Shared Process Model is \emph{initialized} with a single process model (the initial business view), i.e., business and IT views are initially identical. Henceforth, both views may evolve differently through \emph{view change scenarios}, which are discussed below.
+For simplicity, we assume here that changes to different views do not happen concurrently. Concurrent updates can be handled on top of the Shared Process Model using known concurrency control techniques. That is, either a pessimistic approach is chosen and a locking mechanism prevents concurrent updates, which, we believe, is sufficient in most situations. Or an optimistic approach is chosen and different updates to the Shared Model may occur concurrently---but atomically, i.e., each update creates a separat new consistent version of the Shared Model. Parallel versions of the Shared Model must then be reconciled through a horizontal compare/merge technique on the Shared Model. Such a horizontal technique would be orthogonal to the vertical synchronization we consider here and out of scope of this paper.
+
+
+In the \emph{view change} scenario, one view is changed by a stakeholder and checked into the Shared Process Model with the `put' operation to update the other view. A view change may contain many separate individual changes such as insertions, deletions, mutations or rearrangement of modeling elements. Each individual change must be designated as either private or public. We envision that often a new view is checked into the Shared Process Model which contains either only private or only public individual changes.  These special cases simplify the designation of the changes.  For example, during the initial IT implementation phase, most changes are private IT changes.  
+
+A private change only takes effect in one view while the other remains unchanged. Any public change on one view must be propagated to the other view in an automated way. We describe in more detail in Sect.~\ref{sec:realization}, in what way a particular public change in one view is supposed to affect the other view. An appropriate translation of the change is  needed in general. User intervention should only be requested when absolutely necessary for disambiguation in the translation process. We will present an example of such a case in Sect.~\ref{sec:realization}.
+
+The designation of whether a change is private or public is in principle a deliberate choice of the stakeholder that changes his view. However, we imagine that governance rules are implemented that disallow certain changes to be private. For example, private changes should not introduce inconsistencies between the views, e.g., IT should not change the order of two tasks and hide that as a private change. Therefore, the business-IT consistency status need to be checked upon such changes.
+
+The key function of the Shared Process Model is to maintain the consistency between business and IT view. Business-IT consistency can be thought of as a Boolean condition (consistent or inconsistent) or a measure representing a degree of inconsistency. According to our earlier study \cite{BXC+12}, the most important aspect is \emph{coverage}, which means that (i) every element (e.g. activities and events) in the business view should be implemented by the IT view, and (ii) only the elements in the business view are implemented by the IT view.
+
+The second important aspect of business-IT consistency is \emph{preservation of behavior}. The activities and events should be executed in the order specified by the business view. The concrete selection of a consistency notion and its enforcement policy should be configurable on a per-project basis. A concrete notion should be defined in a way that users can easily understand, to make it as easy as possible for them to fix consistency violations. Common IT refinements as discussed in Sect.~\ref{sec:BITGap1} should be compatible with the consistency notion, i.e., should not introduce inconsistencies, wheras changes that cannot be considered refinements should create consistency violations. Checking consistency should be efficient in order to be able to detect violations immediately after a change.
+
+
+On top of the previous scenarios, support for change management is desirable to facilitate collaboration between different stakeholders through the Shared Process Model. The change management should support approving or rejecting public changes. In particular, public changes made by IT should be subject to approval by business. Only a subset of the proposed public changes may be approved. The tool supporting the approval of individual changes should make sure that the set of approved changes that is finally applied to the Shared Process Model leads to a valid model. The Shared Process Model should be updated automatically to reflect only the approved changes. The change management requires that one party can see all the changes done by the other party in a consumable way. In particular, it should be possible for an IT stakeholder to understand the necessary implementation steps that arise from a business view change.
+
+
+If a process is in production, all three conditions, business conformance, IT conformance and business-IT consistency, should be met. Upon a public change of the IT view, the business view changes and hence the Shared Process Model must show that the current business view is not approved. Conversely, a public change on the business view changes the IT view and the Shared Process Model must indicate that the current IT view is not approved by IT. Note that a change of the IT view that was induced by a public change of the business view is likely to affect the validity of the IT view with respect to executability on a BPM engine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,123 @@
+\documentclass{llncs}
+
+\usepackage{subfigure,epsfig,wrapfig}
+\usepackage{makeidx} % allows for indexgeneration
+\usepackage{epsfig,wrapfig}
+\usepackage{amsmath,amscd,stmaryrd,graphicx,caption}
+\usepackage{amssymb,amsmath,latexsym}
+\usepackage{subfigure,wrapfig}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{color}
+\usepackage{multirow}
+
+\input xy
+\xyoption{all} % Reference for references: http://www.brics.dk/~krisrose/Xy-pic.html
+
+\newtheorem{defi}{Def.}
+\newtheorem{prop}{Prop.}
+\newcommand{\abb}[3]{#1 \colon #2 \rightarrow #3}
+
+\newcommand{\cosp}[5]{#1 \overset{#4}\rightarrow #2 \overset{#5}\leftarrow #3}
+\newcommand{\dporule}[5]{#1 \overset{#4}\leftarrow #2 \overset{#5}\rightarrow #3}
+\newcommand{\longdporule}[5]{#1 \overset{#4}\longleftarrow #2 \overset{#5}\longrightarrow #3}
+
+\newfloat{model}{thp}{lop}
+\floatname{model}{{\bf Listing}}
+
+\newcommand{\figepsr}[4]{ % {FIGNAME}{FACTOR}{ANGLE}{CAPTION} }
+   \begin{figure}[h!tb]
+       \def\epsfsize##1##2{#2##1}
+       \centerline{\rotatebox{#3}{\epsfbox{figures/#1.eps}}}
+       \caption{#4}
+       \label{fig:#1}
+    \end{figure}
+}
+
+\newcommand{\figeps}[3]{ % {FIGNAME}{FACTOR}{CAPTION} }
+    \begin{figure}[t]
+        \def\epsfsize##1##2{#2##1}%
+        \centerline{\epsfbox{figures/#1.eps}}
+        \caption{#3}
+        \label{fig:#1}
+     \end{figure}
+}
+
+\begin{document}
+
+\pagestyle{headings} % switches on printing of running heads
+%\addtocmark{XXXX} % additional mark in the TOC
+
+\title{Umbra Designer: Graphical Modelling for Telephony Services} % title
+\titlerunning{Bender} % abbreviated title (for running head) also used for the TOC unless \toctitle is used
+
+\author{Nicol\'as Buezas\inst{1} \and Esther Guerra\inst{1} \and Juan de Lara\inst{1} \and Javier Mart\'in\inst{2} \and Miguel Monforte\inst{2} \and Fiorella Mori\inst{1} \and Eva Ogallar\inst{2} \and Oscar P\'erez\inst{2} \and Jes\'us S\'anchez Cuadrado\inst{1}}
+\authorrunning{Buezas et al.} % abbreviated author list (for running head)
+
+%%%% modified list of authors for the TOC (add the affiliations)
+\tocauthor{
+Juan de Lara (Universidad Aut\'onoma de Madrid),
+Esther Guerra (Universidad Aut\'onoma de Madrid),
+Jes\'us S\'anchez Cuadrado (Universidad Aut\'onoma de Madrid)
+}
+
+\institute{
+Department of Computer Science\\
+Universidad Aut\'onoma de Madrid (Spain)
+\and
+Almira Labs, S. L.\\
+Science Park -- Tres Cantos, Madrid (Spain)\\
+\url{http://www.almiralabs.com}
+%\email{\{Juan.deLara,Esther.Guerra\}@uam.es}
+}
+
+\maketitle
+
+\begin{abstract}
+Almira Labs is a software company that develops value-added services for the telecommunications industry.
+It is focused on innovative technologies that enable enterprise business and mobile and landline operators
+to offer next-generation voice-driven applications for all types of phones. Telephony services are built atop 
+the proprietary {\em Umbra framework}, which is a Java API relying on the JAIN SLEE standard for event-based 
+communication applications.
+
+This paper describes {\em Umbra Designer}, a novel graphical modelling tool for the visual development of 
+telephony services, from which Java code for the {\em Umbra framework} is synthesized. In this way, it is easy
+to develop ready-to-use services, even by users not familiar with the Java API or the JAIN SLEE standard. We also 
+report on some experiments aimed at measuring the efficiency gain derived from using the graphical tool, compared
+with coding directly using the Java API.
+\end{abstract}
+
+\begin{keywords} 
+Model-Driven Engineering, 
+Telephony Services, 
+Jain SLEE, 
+Domain Specific Visual Languages, 
+Code Generation\end{keywords}
+
+\section{Introduction}\label{sec:introduction}
+\input{01_intro.tex}
+
+\section{Programming voice-driven telephony services}\label{sec:api}
+\input{02_api.tex}
+
+\section{Modelling telephony services with Umbra Designer}\label{sec:designer}
+\input{03_designer.tex}
+
+\section{Evaluation}\label{sec:evaluation}
+\input{04_evaluation.tex}
+
+\section{Related work}\label{sec:related}
+\input{05_related.tex}
+
+\section{Conclusions and future work}\label{sec:conclusions}
+\input{06_conclusions.tex}
+
+\noindent {\bf Acknowledgements.} This work was partially funded by the Innocash program and the project ``Go Lite'' TIN2011-24139
+of the Spanish Ministry of Economy and Competitivity. The work was also funded by the R\&D programme of the Madrid 
+Region (project ``e-Madrid'' S2009/TIC-1650).
+
+
+\bibliographystyle{abbrv}
+\bibliography{article}
+
+\end{document}

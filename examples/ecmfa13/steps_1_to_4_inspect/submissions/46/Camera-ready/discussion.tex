@@ -1,0 +1,51 @@
+\section{Discussion}\label{discussion}
+
+In this section we discuss limitations of our work, and its scope of application. 
+We first discuss the supported contracts in the subtyping relation of model typing (Section \ref{sec:discussion:oclcontracts}), and the corresponding model substitutability provided by our approach (Section \ref{sec:discussion:substitutability}).
+
+\subsection{On the Support of Contracts in Model Typing}
+\label{sec:discussion:oclcontracts}
+%% ==> FIRST PART OF THE TITLE
+
+%Contracts > 1st order logic > OCL > subset supported by the translation to Alloy 
+%But... we know that!
+
+% IN OUR PAPER, we consider CONTRACTS in addition to object oriented metamodels
+In this paper we consider contracts in addition to the object oriented structure described in a metamodel. The object-oriented structure is usually defined using Ecore, an implementation aligned with OMG MOF. Contracts can then be invariants expressed in the context of the concepts (i.e., classes) defined in the MOF metamodel, and pre-/post-conditions expressed in the context of operations specified in concepts. While invariants restrict the structure of conforming models and their possible structural substitutability, pre- and post-conditions specify the behavior of the conforming models (i.e. manipulation by model operations) and their possible behavioral substitutability.
+
+% IN OUR APPROACH, we consider OCL CONTRACTS
+In our approach, we assume that the first order logic is used to express contracts in metamodels, and we have chosen OCL to express them. We rely on the provided binding between MOF and OCL as defined by OMG to link OCL expressions to a given MOF metamodel.
+
+% IN OUR TOOL, we consider the SUBSET OF THE OCL CONTRACTS supported by the translation to alloy
+To test the feasibility of our approach, we implemented a prototype tool that is integrated into the Kermeta workbench. The tool checks OCL-based contract-aware subtyping relations between model types. While the substitutability related to the MOF structure is computed directly using Kermeta, the one related to the contracts is computed using Alloy through a translation from OCL expressions to Alloy specifications, and then an analysis of the output provided by the Alloy Analyzer. The tool only provides support for translating a subset of OCL to Alloy.
+
+% IN OUR TOOL -> SUPPORTED part
+Most of the OCL operators have corresponding Alloy constructs. For example, OCL operator $forAll$ corresponds to Alloy construct $all$, $exists$ corresponds to $some$, $includes$ corresponds to $in$, $excludes$ corresponds to $!in$, $sum$ corresponds to $sum$, and $closure$ corresponds to $*$. OCL contracts that involves such operators can be directly transformed into Alloy specifications.
+
+% IN OUR TOOL -> NOT (or PARTIALLY) SUPPORTED part
+However, as pointed out by Anastasakis et al. \cite{anastasakis2010challenges}, the translation from OCL to Alloy is not seamless. There are some OCL operators that do not have corresponding Alloy constructs, and thus OCL contracts including such operators cannot be easily transformed into Alloy specifications.  
+%
+Some of them can be partially supported by the tool using the Alloy libraries. For instance, OCL operators like $select$ and $collect$ are translated by the tool described in the paper using Alloy functions that implement their semantics. Consequently, the operator $iterate$ is partially supported by the transformation tool. The tool provides support for OCL contracts including $iterate$ expressions that can be rewritten as $forall$ with $select/collect$ operators. However, the tool cannot be used to deal with $iterate$ expressions that involve arithmetic accumulation since Alloy is a purely declarative language that does not provide support for imperative accumulators. Finally, the translation cannot deal with OCL casting operators like $oclAsType$ since Alloy has a very simple type system that has little support for type casting.
+
+%SMT solvers address this problem. At some point we should look at tools such as Z3 from Microsoft in addition to Alloy.
+
+\subsection{On the Support of Modeling Language Substitutability}
+\label{sec:discussion:substitutability}
+%% ==> SECOND PART OF THE TITLE
+
+%% we support CONTRACTS FOR SUBSTITUTABILITY...
+The research work described in the paper builds upon our previous work in \cite{ecmfa12}, and paves the way for reasoning about the subtyping relation between two model types that include contracts. 
+Specifically it can be used to reason about the contract-aware subtyping relation that involves structural subtyping (including not only MOF-based Object-Oriented structure but also OCL-based first order invariants) and behavioral subtyping (including a behavioral semantics in an axiomatic way using pre-/post-conditions on operations).
+
+%% ... in a practical way IN KERMETA
+%The Kermeta workbench we use to develop the tool described in the paper is a language workbench that allows modelers to design languages using dedicated meta-languages: Ecore (for the abstract syntax), OCL (for the static semantics, i.e. invariants in the abstract syntax + pre-/post-conditions on operations to provide an axiomatic semantics), and the Kermeta language (for the operational semantics). 
+We implement our approach in a (Kermeta-based) tool included in the Kermeta language workbench to check advanced (i.e., including contracts) subtyping relations between modeling languages based on Ecore and OCL. These two meta-languages are supported by the Kermeta language workbench and are used for describing the abstract syntax and the static semantics respectively. 
+
+%% => scope of STRUCTURAL substitutability
+This approach and its corresponding implementation addresses the need illustrated by the motivating examples from the high-performance embedded system community used throughout the paper. The scope of the structural substitutability we offer is bounded by OCL and its translation to Alloy, and its applicability is well founded, e.g., in model transformation reuse in model-driven development \cite{ecmfa12}.
+
+%% => scope of BEHAVIORAL substitutability
+The actual scope of behavioral substitutability is more difficult to define. The difficulty is twofold: while we support the motivating examples described in the paper, complex situations of OCL based typing could be considered, such as type propagation in model transformation chains. Such challenges will be addressed in future work. % and will be detailed in the concluding remarks of the paper. 
+Moreover, the scope itself of behavioral substitutability is more difficult to delimit. 
+%While it leverages an axiomatic semantics to specify behavioral properties that must be ensured for a safe model transformation reuse, such properties must be reflected into structural information of the input and output models (conforming to the same metamodel) to be expressed. Beyond that, other advanced application of behavioral substitutability should be explored in the future, and the tool-supported approach we provide in this paper is a well-fitted contribution for that. 
+

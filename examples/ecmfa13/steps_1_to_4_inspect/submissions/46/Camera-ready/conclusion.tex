@@ -1,0 +1,17 @@
+\section{Conclusion and Perspective}\label{conclusion}
+
+%In this paper we extended model typing by taking into account contract-aware substitutability where contracts are defined in terms of invariants and pre-/postconditions expressed using OCL. 
+We propose in this paper a model typing theory where model types include contracts. 
+This includes a formally defined subtyping relation between model types, and a tool-supported approach supporting a safe contract-aware substitutability of models conforming to metamodels including contracts. This ensures a safe reuse of model transformations expressed on metamodels including contracts.
+
+Contracts are defined in terms of invariants and pre-/post-conditions expressed using OCL on MOF-based metamodels. 
+The invariants are added on the classes of a metamodel to specify additional structural properties of the metamodel, and pre-/post-conditions are added on the operations of classes to specify model transformations. 
+%
+Consequently, the support of invariants in the subtyping relation ensures a safe reuse of model transformations where OCL contracts are needed to precisely specify the structure on which the model transformation can be applied. The support of pre-/post-conditions paves the way for behavioral substitutability to safely reuse model transformations where OCL contracts are needed to precisely specify the applicability of the model transformation.
+
+The subtyping relation is based on a matching relation between two MOF classes that include OCL contracts, and is checked thanks to a technique based on Alloy. The actual scope of the provided contract-aware substitutability is mainly determined by the OCL-to-Alloy translation.
+
+%
+%We also provide a research prototype to rigorously reason about the subtyping relation between two model types with contracts.
+%The current version of prototype takes as input Ecore model types and OCL contracts.  
+We are currently extending the prototype by providing support for model types and contracts expressed using the Kermeta language workbench.  We also explore how we can extend the approach by using SMT solvers at back-end to analyze the OCL contracts that include more complex arithmetic calculation.

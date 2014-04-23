@@ -1,0 +1,65 @@
+\section{Related Work}\label{relatedwork}
+
+The technical contribution of this paper is the integration of contract matching in the subtyping relation of model typing to enhance the substitutability supported between modeling languages. As discuss in the previous section, we rely for that on the most established translation to Alloy. Then, the work related to our contribution discussed in this paper is the applicability of the substitutability as illustrated in the motivating examples, namely on model transformation reuse.
+
+Substitutability is supported through subtyping in object-oriented languages, including the support of contracts (\emph{e.g.}, Eiffel \cite{Meyer98a}). However, object subtyping does not handle type group specialization (\ie the possibility to specialize relations between several objects and thus groups of types)\footnote{We refer the reader interested in the type group specialization problem to the Ernst's paper~\cite{Ernst01}.}. Such type group specialization have been explored by K\"{u}hne in the context of MDE~\cite{Kuhne12}. K\"{u}hne defines three model specialization relations (specification import, conceptual containment and subtyping) implying different level of compatibility. We are only interested here in the third one, subtyping, which requires an \emph{uncompromised mutator forward-compatibility}, \eg substitutability, between instances of model types.
+
+Several approaches have been proposed during the last decade for model transformation reuse. Strict substitutability relation, such as the first version of model type matching presented in \cite{Steel07}, offers the possibility to reuse model transformation through isomorphic metamodels, i.e., metamodels with MOF-based equivalent structures. Such possibility was first proposed in~\cite{Varro04} where the authors introduce \emph{variable entities} in patterns for declarative transformation rules. These entities express only the needed concepts (\emph{e.g.}, types, attributes, etc.) to apply the rule, allowing any tokens with these concepts to match the pattern and thus to be processed by the rule. Latter, Cuccuru \emph{et al.} introduced the notion of semantic variation points in metamodels~\cite{Cuccuru07}. Variation points are specified through abstract classes, defining a \emph{template}, and metamodels can fix these variation points by binding them to classes extending the abstract classes. Patterns containing \emph{variable entities} and \emph{templates} can be seen as kinds of model types where the variability has to be explicitly expressed and thus anticipated.
+%
+Sanchez Cuadrado \emph{et al.} propose in~\cite{Sanchez08} a notion of substitutability based on model typing and model type matching, but rather to use an automatic algorithm to check the matching between two model types, they propose a DSL that allows users to declare the matching by hand.
+%
+Finally, De Lara \emph{et al.} present in~\cite{deLara10} the \emph{concept} mechanism, along with \emph{model templates} and \emph{mixin layers} leveraged from generic programming to MDE. \emph{Concepts} are really close to model types as they define the requirements that a metamodel must fulfill for its models to be processed by a transformation, under the form of a set of classes. The authors also propose a DSL to bind a metamodel to a \emph{concept} and a mechanism to generate a specific transformation from the binding and the generic transformation defined on the \emph{concept}.
+
+%Further, adaptation allows the reuse of model transformations between metamodels in spite of structural heterogeneities. Two approaches have been considered. The first one is to adapt models conforming to a metamodel $M$ into models conforming to metamodel $M'$ on which is defined the transformation of interest. The second one is to adapt the transformation defined on $M'$ to obtain a valid transformation on $M$.
+%
+%In~\cite{Kerboeuf11} Kerboeuf \emph{et al.} present an adaptation DSL named \emph{Modif} which handles deletion of elements from a model (which conforms to a metamodel $M$) to make it substitutable to an instance of the metamodel $M'$. For this, a trace of the adaptation is kept to be able to go back from the result of the transformation (conforming to $M'$) to the corresponding instance of $M$. For example, in~\cite{Sanchez11} and~\cite{Wimmer11} the binding mechanism presented for \emph{concepts} in~\cite{deLara10} is extended to go further than strict structural mapping by allowing renaming, mapping of several elements from a metamodel to a single element from a \emph{concept} and navigation and filtering using OCL expression. These adaptations are possible through an hybrid approach which mixes model adaptation and transformation adaptation. This approach allows the same kind of adaptations than the injection of Kermeta aspects such as presented in \cite{Sen10}. However, the adaptations are automatically generated, either under the form of helpers or directly in the specific transformation which is generated from the generic transformation and the binding, while Kermeta aspects are added by hand.
+
+%If these approaches make it possible to go further than reuse between isomorphic metamodels, there remain some heterogeneities which can not be handle automatically for now, such as different representation of the same information (\emph{e.g.}, a reference and a class representing the same concept). Moreover, none has, to our knowledge, addressed the problems of contracts and are limited to object-oriented structures. The tool-supported approach that we propose paves the way of both complex structural properties and behavioral properties for safe model transformation reuse through a formal unified theory of model typing. 
+
+%% In the context of model transformation chains, it is often really hard to write the various passes in the right way. ... Our approach allow us to write the flow in an abstract way through pre and post, and then to implement the abstract model types: TO BE ADDED....
+
+In the context of model transformation chains, existing approaches deal with explicit relationships between model transformations. Vanhooff et al. \cite{vanhooff2007uniti} proposed a domain specific language to model and execute a transformation chain. 
+%
+Aranega et al. \cite{aranega2012using} used feature models to classify model transformations involved a transformation chain and specified the constraints between them. The user thus can design a new transformation chain by reusing the classified transformations.   
+%
+Yie et al. \cite{yie2012realizing} advocated the use of several independently developed model transformation chains to convert a high-level model into a low-level model. The interoperability among model transformation chains is achieved by deriving correspondence relationships between the final models generated by each model transformation chain. 
+
+Unlike the above approaches, contract-aware model subtyping offers a unified and formal type theory to facilitate the safe reuse of model transformations involved in a transformation chain. It follows a declarative fashion to specify a model transformation chain in an abstract way using pre-/post-conditions on abstract model types. This promotes then the reuse of various implementations that match the conditions for a safe execution of the model transformation chain.
+
+
+\begin{comment}
+\subsection{Model Transformation Reuse}
+
+Iacob et al. \cite{iacob2008reusable} described a design pattern based approach for model transformation reuse.
+The approach focuses on identifying and documenting reusable model transformation patterns.
+Their approach, however, can only provide support for reusing part of transformation rules that are captured by the transformation pattern.
+
+Cuadrado et al. \cite{Sanchez08} used factorization and composition of transformation definitions to enhance the reusability of model transformation.
+The approach factorizes common parts of transformation definitions that are intended for reuse via composition and adaptation. 
+Their approach, however, requires the input metamodel and the output metamodel of a transformation to have common model elements.
+
+Cuadrado et al. \cite{Sanchez11} proposed a generic approach for model transformation reuse.
+The approach uses templates to specify transformation rules in the context of a generic metamodel.
+The templates are later bound to specific metamodels that conform to the generic metamodel.
+The conforming relation between the generic metamodel and specific metamodels described in \cite{Sanchez11} is similar to one of the model subtyping relations (i.e., total non-isomorphic subtyping relation, cf. Def. 13 of \cite{ecmfa12}) described in our previous work. 
+
+Sen et al. \cite{Sen10} presented an approach to reusing model transformations across several similar metamodels. 
+The approach uses the slicing technique to obtain parts of a metamodel that are involved in a specific transformation.
+The sliced metamodel is used as a model type, and the specific transformation can be reused in the metamodels that conform to the model type. 
+Their approach builds upon a very simple model type system, and thus cannot provide support for contracts reuse.
+
+Lara and Guerra \cite{deLara11} introduced $concepts$ (supertype) to capture structural and behavioral requirements for models and metamodels.
+Model management operations (e.g., transformation operations) that defined over $concepts$ can be reused to any metamodels conforming to $concepts$.
+Unlike the model subtyping relation, the conforming relation described in \cite{deLara11} is determined by an explicit binding between $concepts$ (supertype) and metamodels (subtypes).
+
+\subsection{Model Transformation Chain}
+
+Vanhooff et al. \cite{vanhooff2007uniti} proposed a domain specific language to model and execute a transformation chain.
+Their work described in \cite{von2008constructing} focuses on generating diagrams to visualize the traceability information among intermediate and final models produced from the transformation chain execution.
+
+Aranega et al. \cite{aranega2012using} used feature models to classify model transformations involved a transformation chain. The user thus can design a new transformation chain by reusing the classified transformations.   
+
+Yie et al. \cite{yie2012realizing} advocated the use of several independently developed model transformation chains to convert a high-level model into a low-level model. The interoperability among model transformation chains is achieved by deriving correspondence relationships between the final models generated by each model transformation chain. 
+
+Unlike the above approaches, contract-aware model subtyping relation offers a unified type theory to facilitate the reuse of model transformations involved in a transformation chain. 
+\end{comment}

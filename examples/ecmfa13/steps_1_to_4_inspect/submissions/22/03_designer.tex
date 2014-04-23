@@ -1,0 +1,99 @@
+Fig.~\ref{fig:schema} shows the architecture of our solution. The developer or designer graphically defines
+the services using {\em Umbra Designer}. We have built this tool as an Eclipse plugin, using Graphiti~\cite{Graphiti} 
+for the visual part, EMF~\cite{EMF} as modelling technology, and the Epsilon Generation Language (EGL)~\cite{EGL} 
+for code generation. After validating the service, the tool generates a Maven project with code synthesized from
+the service. The code makes use of the {\em Umbra framework}, as explained in the previous section. Once compiled, 
+the project can be deployed as-is on SLEE servers, like the {\em open cloud}'s Rhino application server~\cite{rhino}.
+
+\figeps{schema}{0.48}{Schema of {\em Umbra Designer}.}
+
+Next, we introduce the main elements of the tool. Fig.~\ref{fig:servicio1} shows a screenshot with an example service. 
+The tool abstracts services in the form of state machines, accommodating the State design pattern, as explained above.
+
+The main canvas contains the description of a simple service. The service initial state is {\em Init}, where the 
+service waits for incoming calls once a new session has been established. Hence, at the top level, the event from the 
+initial state is {\em SessionRequest} (see arrow coming into state {\em Init}). The service designer does not 
+have to take care of handling the {\em Bootstrap} event, as the tool itself will generate code to register the 
+listeners for the events and actions used by the service (in the example all are {\em IVR} events), and identifying 
+the needed resources. Events are depicted in blue (bold) over the arrows, while actions are shown in red below 
+the events. The service plays a welcome message to each incoming call. This is modelled by a {\em Connected} 
+event and the associated {\em PlayCollect} action. This action has the additional effect to demand pressing 
+some key on the phone keypad. Thus, the service waits in state {\em KeyRequest} until the reception of some key 
+stroke (event {\em Collected}). If the key pressed was ``1'' or ``2'', the service plays a different message 
+in each case, as indicated by the {\em Play} action. Once the message associated to ``1'' or ``2'' is played 
+(event {\em Played} in the transition going out from {\em Bye}), the service ends the call through the {\em Hangup} 
+action.
+
+\figeps{servicio1}{0.3}{Defining a simple service with {\em Umbra Designer}. }
+
+The palette to the right contains the different types of states, transitions (i.e. events) and actions that can
+appear in services. The Properties view at the bottom allows configuring any item selected in the model; in the
+figure, it shows the configuration properties of the service and its resources. The tool has a contextual menu 
+to validate the service (the detected warnings and errors are listed in the Problems view at the bottom), to 
+generate Java code from the service, and to manage the generated Maven project (the project is shown in the 
+Project Explorer tab to the left). 
+
+Altogether, the tool promotes an agile way to work, providing support for short cycles of modelling -- 
+code (re-)generation -- deployment in an integrated environment. For instance, once code is generated
+for a service, developers can provide additional Java classes for further functionality 
+(e.g. database persistence, which is not currently supported by our tool). We believe that this approach to 
+agile modelling will be better accepted in development processes as it provides immediate value by code 
+generation and service validation, and it is seamlessly integrated in the developer Java environment.
+
+The abstract syntax of the services built with our tool is defined through a meta-model, of which
+Fig.~\ref{fig:UmbraDesignerMetaModel} shows an excerpt. A state machine is configured through a 
+number of properties (class {\em Properties}), like the addresses of the application and server, and 
+the protocols used, among others. It is also possible to declare variables that will be available in
+Java actions. Two different types of variables are supported: shared variables (object attributes), 
+used to pass information between different service states, and static variables (class attributes), 
+which retain their value between different service invocations. 
+
+\figeps{UmbraDesignerMetaModel}{0.5}{Excerpt of the {\em Umbra Designer} meta-model.}
+
+We consider five types of states: initial, final, simple, composite and choice. Each state machine has 
+one initial and one final states. Composite states enable hierarchical structuring of the machine, and 
+contain a reference to a state machine which can be defined within the same model or externally in a 
+separate file. Choice states have multiple output branches with a boolean condition each.
+
+Transitions can be of different types that correspond to event types of the {\em Umbra framework}. 
+They are organized in six categories: Interactive Voice Response (IVR) events, Call Control events, 
+HTTP (reception of HTTP requests), SMS, Text-to-Speech (TTS) and Speech recognitions events 
+(for clarity, Fig.~\ref{fig:UmbraDesignerMetaModel} only shows IVR events). There are also general 
+facilities, like timers. The initial event in a state machine is always of type {\em SessionRequest}.
+IVR events are concerned with playing and recording media streams or with key pressing in the phone keypad. 
+Examples of supported IVR events include {\em Played} (fired when a media stream finishes playing), 
+{\em Recorded} (when a recording finishes) and {\em Collected} (when the user presses some key). 
+Call control events include those related to the connection, disconnection and transfer of call legs. SMS 
+events are concerned with the reception of text messages. Finally, TTS events are those generated by 
+a TTS engine, like the start, finish, pause and resume of a speech.
+
+A transition may have associated a sequence of actions, to be executed when the transition is triggered. 
+Actions rely on the {\em Umbra} API, and are organized in similar categories to those for events. A 
+special action {\em JavaCode} permits adding Java code for more general actions not directly supported 
+by the framework, where it is possible to use the declared shared and static variables. The parameters 
+of each action can be configured through a properties panel, as shown to the bottom of Fig.~\ref{fig:repairingService} 
+for the case of the {\em PlayRecord} action.
+
+{\em Umbra Designer} supports hierarchical modelling by means of composite states (see {\em MembersMenu}
+in Fig.~\ref{fig:hierarchy}), and through references to state machines defined in other diagrams (see state 
+{\em Registration} in the same figure). In the last case, a contextual menu allows opening the referenced 
+machine in a different tab, as well as expanding or occluding the diagram inside the state. This feature enables
+the construction of repositories of services, which then can be used to build other more complex services.
+
+\figeps{hierarchy}{0.3}{Hierarchical modelling, and report of errors/warnings, in {\em Umbra Designer}.}
+
+The tool enables simple validations of services prior to code generation, and displays the detected errors 
+and warnings in the Eclipse Problems view (see bottom panel in Fig.~\ref{fig:hierarchy}, which contains
+the detected list of errors for an information and registration service for a gym). For example, the tool reports
+as an error any unreachable state, any state (different from the final state) without outgoing transitions, as well 
+as non-existing paths between the initial and final states. Warnings concern the order in which some events and 
+actions should occur, as some actions trigger the future occurrence of events. For example, the tool gives a 
+warning if a {\em Played} event is declared, but there is no previous {\em Play} action. Notice that all these 
+errors and warnings would be difficult to detect statically, if a direct encoding of the service in Java is used. 
+However, we do not currently analyse {\em JavaCode} actions in transitions.
+
+Once the model of the service is validated, it is possible to synthesize Java code from it. The tool creates a Maven 
+Eclipse project, which can be deployed in an SLEE server. The generated Java code follows the State pattern~\cite{Gamma}, 
+and reflects the hierarchical constructs introduced in the model. Moreover, the code includes protected regions, 
+so that if the developer modifies the code manually, this is not overwritten when code is regenerated again from 
+the model. 

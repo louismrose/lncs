@@ -1,0 +1,23 @@
+Here is the list of major modifications made to the article in order to take into account reviewers comments and requirements:
+
+- formalization: we corrected Definition 1 by explicitly removing the self-reference on the term 'model'; we added $G_{MM_r}$ to Definition 8. The reviewer is right that some properties can be studied formally, such as the validity of combining these transformations, though these could not be included in the paper. Nevertheless we believe the formalization is an effort to provide a non-ambiguous description of the approach and allow other researchers to build upon (or refute) this work.
+
+- previous work: we extended Figure 1 and added the relevant explanation to exhibit the whole model search MDE process so as to make the paper more self-contained.
+
+- running example: we reorganized the entire paper to have the use case as a running example starting from Section 3. We now use it to illustrate the approach both in the formal and process parts of the text. The figures have also been updated to include the application on the example.
+
+- case study: we definetely understand the reviewers critics. We chose this use case because it is a small and well known application, used in other transformation research, and thus think it helps keeping the section short and clear for a conference paper. It is true that it does not exhibit some of the expected benefits (such as offering design choices, since there aren't many different solutions anyway), but still, we believe it allows us to describe how search behaves compared to deterministic rules, or how different scenarios can be handled with the same specifications.
+However we have deeply reworked Section 4 to try to answer the various requirements, mainly:
+(1) we clearly stated that the implementation is only meant as a proof-of-concept and not an evaluation, as well as the preliminary nature of the experiments.
+(2) we narrowed what were the research questions and goals of the experiments, describing more clearly the different scenarios.
+(3) we added explanations on Figure 2 and we reduced the set of OCL constraints to only describe 4 different categories of constraints.
+(4) in analysis and future work, we briefly extended the discussion on scalability on the basis of early experiments realized on a real-world application (still on the Class-Relational schemas). The freely available package has been updated with the details of these new experiments.
+
+- contribution claim: we brought changes to the entire paper. We chose more appropriate words to describe the presented work (removed 'evaluation', 'validation',  'results' is only meant as experiments outcomes not scientific contributions, etc.). We clearly pointed out that the approach is rather a different perspective on transformations and offers unusual properties. We also made it clear that many-to-many transformations are not adressed in the article.
+
+- figures: we reworked all the figures to reduce their size and improve their readability once printed.
+
+We believe the comments and modifications have strenghtened the paper and think the reviewers will feel the same.
+
+Regards,
+The authors,

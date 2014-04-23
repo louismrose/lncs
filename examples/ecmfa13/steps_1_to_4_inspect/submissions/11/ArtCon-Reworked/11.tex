@@ -1,0 +1,149 @@
+\documentclass{llncs}
+
+\usepackage{graphicx}
+\usepackage{epsfig, graphicx, listings}
+\usepackage[noend]{algorithmic}
+\usepackage{algorithm}
+\usepackage{amsmath,amssymb,latexsym,stmaryrd}
+\usepackage{mathrsfs}
+\usepackage{calrsfs}
+\usepackage{txfonts} %times
+%\usepackage{subfigure}
+\usepackage{wrapfig}
+\usepackage{url}
+\usepackage{mdwlist}
+
+\graphicspath{{figures/}}
+\def\uniscale{0.5}
+\def\scaleA{0.3} % scale from Visio that uses 24pt font
+\def\scaleB{0.41} % scale from Visio that uses 12pt font
+
+\def\bpmn{{\sc BPMN }}
+\def\bpel{{\sc BPEL }}
+
+\renewcommand{\algorithmiccomment}[1]{\textbf{//} #1}
+%\newcommand{\algorithmicmethod}{\textbf{method} \algorithmic}
+%\newcommand{\algorithmicendmethod}{\algorithmicend
+%\algorithmicmethod}
+
+%\newcommand{\scalefig}[3]{%%  scale, figure, caption
+%\begin{figure}[!h]%[htb]
+%\begin{center}
+%\makebox{{\def\epsfsize##1##2{#1##1}\epsfbox{#2}}}
+%\end{center}
+%\vspace*{-3mm} \caption{\label{#2}#3}
+%\end{figure}}
+
+%\usepackage{amsthm}
+%\usepackage{multirow}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newif{\ifMarginalComments}
+\MarginalCommentstrue
+%\MarginalCommentsfalse
+
+\newcommand{\mnote}[1]{\stepcounter{ncomm}%
+\vbox to0pt{\vss\llap{\scriptsize{\arabic{ncomm}}}\vskip6pt}%
+\marginpar{\scriptsize\raggedright%
+\textbf{\arabic{ncomm}}.\hskip0.5em#1}}
+
+\newcounter{ncomm}
+
+\newcommand{\HVO}[1]{%
+  \ifMarginalComments{\mnote{[HVO: #1]}} \else {} \fi}
+\newcommand{\JKU}[1]{%
+  \ifMarginalComments{\mnote{[JKU: #1]}} \else {} \fi}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\renewcommand{\labelitemi}{$\bullet$}
+\renewcommand{\labelitemii}{-}
+\newcommand{\etal}{\emph{et al.}}
+
+\pagestyle{headings} % for page numbers
+
+\hyphenation{quad-rat-ic}
+
+%\floatname{algorithm}{Procedure}
+
+
+\input{Macros.sty}
+\begin{document}
+
+\title{Supporting Different Process Views through a Shared Process Model}
+\author{Jochen K\"uster\inst{1} \and Hagen V\"olzer\inst{1} \and C\'edric Favre\inst{1} \and Moises Castelo Branco\inst{2} \and Krzysztof Czarnecki\inst{2}} 
+\institute{%
+IBM Research --- Zurich,
+Switzerland\\ \and
+Generative Software Development Laboratory, University of Waterloo, Canada
+}
+
+
+\maketitle
+
+\begin{abstract}
+Different stakeholders in the Business Process Management (BPM) life cycle benefit from having different views onto a particular process model. Each view can show, and offer to change, the details relevant to the particular stakeholder, leaving out the irrelevant ones. However, introducing different views on a process model entails the problem to synchronize changes in case that one view evolves. This problem is especially relevant and challenging for views at different abstraction levels. In this paper, we propose a \emph{Shared Process Model} that provides different stakeholder views at different abstraction levels and that synchronizes changes made to any view. We present detailed requirements and a solution design for the Shared Process Model in this paper. Moreover, we also present an overview of our prototypical implementation to demonstrate the feasibility of the approach.
+\end{abstract}
+
+\input{Introduction-ecmfa}
+\input{Business-IT-Gap-ecmfa}
+\input{Requirements-ecmfa}
+\input{Solution-ecmfa}
+
+\subsection{Implementation}
+\label{sec:implementation}
+
+As proof of concept, we have implemented a prototype as an extension
+to the IBM Business Process Manager and as an extension to an open source BPMN editor. 
+A recorded demo of our prototype is publically available~\cite{ArtConDemo}.
+Our current prototype implements initialization of a Shared Process Model from a BPMN process model, check-in of private and public changes to either view and change propagation between both views. Furthermore, we have implemented a check for strong consistency, which can be triggered when checking in private changes. We currently assume that the changes between two subsequent IT views (or business views respectively) are either all public or all private.
+
+With an additional component, this assumption can be removed. Then, the change script is presented to the user who can then mark the public changes individually. For this scenario, the compare/merge component needs to meet the following two requirements: (i) the change script must be consumable by a human user and (ii) individual change operations presented to the user must be as independent as possible. Note that the change operations in a change script are in general interdependent, which restricts the ability to apply only an arbitrary subset of operations to a model. Therefore, a compare/merge component may not support to separate all public from all private changes.
+
+In fact, we first experimented with a generic compare/merge component from the EMF Compare Framework, which could be used to generate a change script for two process model based on the process metamodel, i.e., BPMN 2. The change operations were so fine-grained, e.g. `a sequence flow reference was deleted from the list of incoming sequence flows of a task', such that the change script was very long and not meaningful to a human user without further postprocessing. Furthermore, the BPMN 2 metamodel generates very strong dependencies across the different parts of the model so that separate changes were likely to be dependent in the EMF Compare change script.
+
+For these reasons, we switched to a different approach with compound changes as described above. Note that the change approval scenarios described in Sect.~\ref{sec:requirements2} generate the same requirements for the compare/merge component: human consumability of the change script and separability of approved changes from rejected changes. 
+
+
+
+\section{Related Work}
+\label{sec:related}
+
+We used prior work~\cite{KuesterGFE08} on comparing and merging process models on the same abstraction level. Our work deals with changes of models on different abstraction level and distinguishes between public and private changes.
+
+Synchronizing a pair of models connected by a correspondence relation is an instance of a symmetric delta lens~\cite{Diskin11}. In a symmetric delta lens, both models share some information, but also have some information private to them. Deltas are propagated by translation, which has to take the original and the updated source including the relation between them and original
+target model including the correspondence to the original source as
+a parameter. Symmetric delta lenses generalize the state-based symmetric
+lenses by Pierce et al.~\cite{Hofmann11}. In recent years, various techniques have been developed for synchronization of models. Popular approaches are based on graph grammars (e.g. Giese et al.~\cite{GieseW09}). In contrast to these approaches, our idea of explicitly marking private elements is novel. 
+
+In the area of model-driven engineering, the problem of a coupled evolution of a meta-model and models is related to our problem. Coupled evolution has recently been studied extensively (compare Herrmannsdoerfer et al. \cite{HerrmannsdoerferBJ09} and Cicchetti et al.~\cite{CicchettiRP09,CicchettiCL12}). The problem of coupled evolution of a meta-model and models has similarities to our problem where two or more models at a different abstraction level evolve. One key difference is that in our application domain we hide private changes and that we allow changes on both levels to occur which then need to be propagated. In contrast to Herrmannsdoerfer et al., we aim at complete automation of the evolution. Due to the application domain, we focus on compound operations and also translate the parameters according to the correspondences. Overall, one could say that our solution tries to solve the problem in a concrete application domain whereas other work puts more emphasis on generic solutions which can be applied to different application domains.
+
+On an even more general level, (in)consistency management of different views has been extensively studied in recent years by many different authors (e.g. Finkelstein et al.~\cite{FinkelsteinGHKN93}, Egyed et al.~\cite{Egyed06}). The goal of these works is to define and manage consistency of different views where views can be diverse software artefacts including models. As indicated in the paper, our problem can be viewed as one instance of a consistency problem. In contrast, we focus on providing a practical solution for a specific application domain which puts specific requirements into place such as usability and hiding of private changes.
+
+In the area of process modeling, Weidlich et al.~\cite{Weidlich10} have studied vertical alignment of process models, which brings models to the same level of abstraction. They also discuss an approach for automatic identification of correspondences between process models. Buchwald et al.~\cite{Buchwald11} study the Business and IT Gap problem in the context of process models and introduce the Business IT Mapping Model (BIMM), which is very similar to our correspondences. However, they do not describe how this BIMM can be automatically maintained during evolution. Tran et al.~\cite{Tran08} focus on integration of modeling languages at different abstraction levels in the context of SOA Models but they do not focus on the closing the business IT gap as we do. Werth et al.~\cite{Werth06} propose a business service concept in order to bridge the gap between the process layer and the technical layer, however, they do not introduce two abstraction layers of process models. Thomas et al.~\cite{ThomasLD08} on the other hand  distinguish between different abstraction layers of process models and also recognize the need of synchronizing the layers but they do not provide techniques for achieving the synchronization.
+
+Various authors have proposed different forms of abstractions from a process model, called a \emph{process view}, e.g. \cite{SLS10}. A process view can be recomputed whenever the underlying process model changes. Recently, Kolb et al.~\cite{KKR12} have taken the idea further to allow changes on the process view that can be propagated back to the original process model, which can be considered as a model synchronization. They restrict to hierarchical abstractions of control flow in well-formed process models.
+
+
+
+
+
+\section{Conclusion}
+
+Different process model views are important to reflect different concerns of different process stakeholders. Because their concerns overlap, a change in one view must be synchronized with all other overlapping views in order to facilitate stakeholder collaboration.
+
+In this paper, we have presented detailed requirements for process model view synchronization between business and IT views that pose a significant technical challenge for its realization. These requirements were derived from a larger industrial case study~\cite{BXC+12} and additional interviews with BPM practicioners. A central intermediate step was the systematic categorization of changes from business to IT level given in Sect.~\ref{sec:BITGap1}. We have also presented our solution design and reported first results of its implementation to demonstrate the feasibility of our approach.
+
+We are currently working on the further elaboration and implementation of the change management scenarios described above, and we are preparing an experimental validation with users in order to further demonstrate the value of our approach. Also, not all elements of the BPMN metamodel are currently synchronized but only the main ones. In particular, the synchronization of the layout information of the models was not yet addressed and requires further study.
+
+
+\small
+\input{Bib.tex}
+%\bibliography{Artcon}
+%\bibliographystyle{plain}  % abbrv
+
+%\input{Appendix}
+
+\end{document}

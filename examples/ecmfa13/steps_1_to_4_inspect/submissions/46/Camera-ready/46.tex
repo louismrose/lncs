@@ -1,0 +1,94 @@
+\documentclass[]{llncs}
+%
+\usepackage[english]{babel}
+\usepackage{euscript}
+\usepackage{mathrsfs,amssymb}
+\usepackage{amsmath}
+\usepackage{makeidx}
+\usepackage{url}
+\usepackage{color}
+\usepackage{pslatex}
+\usepackage{diffs}
+\usepackage[latin1]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{xspace}
+\usepackage{subfigure}
+\usepackage[pdftex]{graphicx}
+\usepackage{comment}
+\usepackage{tabularx}
+\usepackage{soul}
+\usepackage[page]{appendix}
+\usepackage{subfigure}
+\usepackage{enumerate}
+\usepackage{enumitem}
+\usepackage{moresize}
+\usepackage{algpseudocode}
+ 
+
+\input{utils.tex}
+
+\declareuser{rf}{rf}{blue}
+\declareuser{ps}{ps}{green}
+\declareuser{bc}{bc}{magenta}
+
+\begin{document}
+
+\title{Using Model Types to Support \\Contract-Aware Model Substitutability}
+\titlerunning{Using Model Types to Support Contract-Aware Model Substitutability}
+
+\author{ %
+	Wuliang Sun\inst{1}, Benoit Combemale\inst{2}, Steven Derrien\inst{2}, Robert B. France\inst{1}
+}
+
+\authorrunning{Sun et al.}
+
+\institute{%
+Colorado State University, Fort Collins, USA
+\and
+University of Rennes 1, IRISA, France
+}
+
+\maketitle
+\thispagestyle{empty}
+
+\setcounter{footnote}{0}
+
+\begin{abstract}
+	\input{abstract.tex}
+	
+	\keywordname{SLE, Modeling Languages, Model Typing, Contract Matching, Model Substitutability}
+\end{abstract}
+
+\input{introduction.tex}
+%\input{introduction_old20130214.tex}
+
+\input{examples.tex}
+%\input{examples_old20130214.tex}
+
+\input{background.tex}
+%\input{background_old20130214.tex}
+
+\input{contribution}
+
+\input{discussion.tex}
+
+\input{rw}
+
+\input{conclusion.tex}
+
+\subsubsection*{Acknowledgment}
+%
+% For French admin issues:
+This work was supported by the National Science Foundation grant (CCF-1018711), the ANR INS Project GEMOC (ANR-12-INSE-0011), and the CNRS PICS Project MBSAR.
+
+\bibliographystyle{splncs}
+%\bibliographystyle{unsrt}
+\bibliography{ecmfa12-contractmatching}
+
+%\newpage
+%\appendix
+%\input{isomorphism.tex} 
+
+
+\end{document}
+% vi:spell spelllang=en:

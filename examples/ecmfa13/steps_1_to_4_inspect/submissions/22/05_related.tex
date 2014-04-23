@@ -1,0 +1,31 @@
+The need for developing and making available telecommunication APIs, is discussed in~\cite{5640901}. Similar to our rationale, the author
+foresees the possibility of telecommunication application stores -- similar to those of Apple and Android -- based on the availability of service creation environments. 
+%While most large companies offer different forms of service creation environments and deployment frameworks, they are closed systems. (?)
+
+There are several implementations of the JAIN SLEE, like Mobicents~\cite{Mobicents} and
+OpenCloud~\cite{rhino}. The latter includes a visual builder for services, the
+Visual Service Architect (VSA)~\cite{VSA}. In this environment, a service is described by an application-scenario diagram (to configure properties, protocols and
+resources), state machine diagrams (to describe service states) and flowchart diagrams (to describe actions). VSA targets general JAIN SLEE 
+services, not necessary for telephony, and hence lacks high-level constructs (both events and actions) for voice-driven telephony services, as we 
+provide in {\em Umbra Designer}. VSA state
+machines and flowcharts tend to be of lower level of abstraction due to the lack of constructs like hierarchical states, choice states and key strokes
+branches, among others.
+
+In~\cite{ICT}, the authors present an environment for service composition using MetaEdit+. SBBs are programmed 
+in Java, which become reusable and can be composed graphically. Our approach is different as the blocks themselves 
+are modelled using state machines, from which Java code is generated. Also in the context of MetaEdit+, in~\cite{DSVLs}, 
+the authors describe a graphical language to define simple call processing services. This language allows defining the 
+flow for handling incoming calls like rerouting them, or sending a message upon their reception. The services can be 
+serialized in XML. In our case, state machines are a better abstraction for the event-driven nature of voice-driven 
+telephony services, while we need to generate more complex Java code. Another language for telephony service 
+creation is SPL~\cite{palix:inria-00196520}, a scripting textual language with formal semantics. It differs from our
+approach in that it is targeted to experienced programmers, and its formal semantics enables critical properties of services 
+to be guaranteed. We plan to address exhaustive testing of service models against user actions in future work.
+
+VoiceXML~\cite{VoiceXML} is a W3C standard to describe interactive voice dialogues between a human and a computer. VoiceXML files
+are played by voice browsers, and contain tags that instruct the browser to provide speech synthesis, automatic speech recognition, 
+dialog management, and audio playback. VoiceXML applications are accessed via HTTP, while we use phone protocols.
+
+On a final comment, there are not many published results of efficiency of MDE in practice~\cite{HutchinsonWRK11,DSVLs}. 
+Our work also contributes in this direction, by describing a specific successful scenario for the applicability of MDE.
+

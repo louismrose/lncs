@@ -1,0 +1,47 @@
+We are witnessing an exponential grow in the capabilities of mobile phones and in the functionality demanded by 
+their users. The usual approach to deliver mobile services nowadays is the development of {\em apps} 
+for a particular technology (iOS, Android, BlackBerry), running in the device of the client. This business model is 
+supported by small software firms that need to develop innovative solutions in short times, in order to cope with 
+an increasingly competing environment. This model has the drawback of the fragmentation of the mobile platforms, 
+which implies different developments for each platform. Moreover, the functionality offered by different phones varies, 
+from traditional landline phones to smartphones of the latest technology. Thus, companies may lose clients if they 
+target particular platforms or assume some functionality for running their {\em app}~\cite{5640901}. 
+
+Instead, a different alternative is to build services that do not run on the phone, but on the provider infrastructure
+through dedicated servers or the cloud, and which are accessed through phone calls~\cite{Almira}. This model has the 
+advantage that is independent of the mobile phone platform used, and to a certain extent, of the phone capacities. While 
+these ``server-side'' services cannot replace all types of phone {\em apps}, they are useful for many scenarios. They
+are normally driven by voice and DTMF key strokes. Examples include voice notes and voice-to-email services; 
+services to inject customized background sounds in phone calls; the customization of the telephone keys to inject 
+``voice smileys'' in a conversation; as well as the typical Interactive Voice Response (IVR) applications of call 
+centers, telebanking, credit card services, and so on. These services tend to require a reduced customer learning curve
+compared to those offered by mobile {\em apps}.
+
+JAIN SLEE~\cite{JAINSLEE} is a standard of the Java Community Process for developing event-based 
+telecommunication applications, which can be used to build server-side telephony services. Applications 
+developed with JAIN SLEE can be deployed on any server implementing it. A Service Logic Execution 
+Environment (SLEE) is an efficient event processing application environment with high throughput and 
+low latency. A service is built by the construction and interconnection of components, and their subsequent
+deployment in SLEE servers.
+
+Almira Labs has developed the {\em Umbra framework}, a Java API that leverages 
+on the JAIN SLEE standard. The framework simplifies the development of JAIN SLEE applications by providing 
+a higher-level view of the event flows and protocols involved in a telecommunications application, and provides 
+true portability across different SLEE implementations. 
+Still, using this framework requires specialized knowledge in JAIN SLEE and Java. In order to make service 
+construction possible for non-experts -- namely, people from customer companies -- Almira and some 
+researchers of the Universidad Aut\'onoma have developed {\em Umbra Designer}, a tool for the graphical
+development of telephony services. The tool abstracts services in the form of hierarchical state machines using the 
+events and actions available in the {\em Umbra framework}. 
+The tool integrates a code generator that produces a {\em Maven}~\cite{Maven} Java project, which 
+can be deployed as-is in JAIN SLEE servers for execution. The aim of the tool is to facilitate 
+service modelling to non-experts in the API, and speed-up the development for programmers. This is 
+demonstrated by a series of experiments where we have measured the efficiency of manual service 
+development using the Java API with respect to using the tool, reporting an increase of productivity of 
+more than 40\% in the average case.
+
+\paragraph{Paper organization.} Section~\ref{sec:api} provides some background on 
+JAIN SLEE and the {\em Umbra framework}. Section~\ref{sec:designer} introduces the graphical 
+modelling tool. Section~\ref{sec:evaluation} presents the evaluation results. Section~\ref{sec:related} 
+compares with related work, and finally, Section~\ref{sec:conclusions} ends with the conclusions and plans 
+for future work.

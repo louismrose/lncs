@@ -1,0 +1,91 @@
+\section{Related Work}
+\label{sec:relatedWork}
+
+The AUTOSAR standard specifies several run-time monitoring mechanisms that are provided by the Operating System (OS) and the Watchdog Manager (WdM).
+In the \emph{Specification of Operating System} \cite{AUTOSAR_OS_SPEC}, three monitoring mechanisms for the detection of timing faults at run-time, i.e., tasks or interrupts missing their deadline, are considered.
+\emph{Execution time protection} monitors the execution budget of tasks and category 2 Interrupt Service Routines (ISRs), in order to guarantee that the execution time does not exceed a statically configured upper bound.
+\emph{Locking time protection} supervises the time that a task or category 2 ISR can hold a resource, including the suspension time of OS interrupts or all interrupts of the system.
+This is done to prevent priority inversions and to recover from potential deadlocks.
+The third monitoring mechanism is \emph{inter-arrival time protection}, which controls the time between successive activations of tasks and the arrival of category 2 ISRs.
+These mechanisms monitor the system at the task level and are not suited to implement control flow or data flow monitoring.
+The configuration is done at the OS level and does not factor the system view of the model.
+
+The \emph{Specification of Watchdog Manager} \cite{AUTOSAR_WDM_SPEC} provides three monitoring mechanisms that are complementary to those offered by the AUTOSAR OS.
+All of the implemented mechanisms are based on checkpoints that report to the watchdog manager (WdM) when they are reached.
+Supervised functions have to be instrumented with calls to the watchdog, which verifies at run-time the correct transition between two checkpoints as well as the timing of the checkpoint transitions.
+For \emph{alive supervision}, the WdM periodically checks if the checkpoints of a supervised entity have been reached within the given limits, in order to detect if a supervised entity is run too frequently or too rarely.
+For the supervision of aperiodic or episodical events that have individual constraints on the timing between checkpoints, the WdM offers \emph{deadline supervision}.
+In this approach, the WdM checks if the execution time of a given block of a supervised entity is within the configured minimum and maximum bound.
+The third mechanism that the WdM provides is \emph{logical monitoring}, which focuses on the detection of control flow errors, which occur if one or more program instructions are processed either in an incorrect sequence or are not processed at all.
+This approach resembles the work of Oh et al. \cite{Oh2002}, in which a graph representation of a function is constructed by dividing the function into \emph{basic blocks} at each (conditional) branch.
+Basic blocks are represented by nodes, whereas legal branches are represented by arcs that connect the nodes. 
+Whenever a new basic block is entered, the monitor verifies that the taken branch was legal, according to the graph representation.
+
+Except for control flow monitoring, the monitoring mechanisms that AUTOSAR currently specifies are only suitable for monitoring timing properties at a low level of abstraction. 
+None of the approaches is configured on the level of the AUTOSAR system model, which offers the developer an intuitive and integrated view on the system.
+Apart from the monitoring services offered by AUTOSAR, few research has covered this area so far.
+One exception are two articles by Cotard et al. \cite{Cotard2012a,Cotard2012b}, in which the authors describe a monitoring approach for the synchronization of tasks on multi-core hardware platforms. 
+In their approach, dependencies between tasks are first modeled as a finite state machine (FSM).
+The FSM is then translated into a linear temporal logic (LTL) specification, from which Moore machines and, subsequently, C code is generated.
+Their primary focus is on synchronization and not on control or data flow monitoring.
+%Today, in industry mostly hand programmed watchdog monitors are used that are programmed directly in the target language (C).
+%This allows individual monitors for every purpose, but is not well integrated into the AUTOSAR process.
+%Conventions, such as naming conventions of AUTOSAR, have to be kept by the programmer and errors in the monitoring code are possible.
+%
+%To reduce the risk of errors in monitors a model-based specification eases the modeling for the programmer, and the specification gets more readable.
+%There are different modeling languages for signatures that can be used for communication and program flow monitoring. 
+%EDL~\cite{Schmerl2006}, 
+%simple PN languages for monitors in embedded systems~\cite{Frankowiak2009} 
+%These languages are only usable for small monitor definitions.
+%A framework that is similar to our MBSecMon process is the Monitoring Oriented Programming framework (MOP) \cite{Meredith2011}. Is based on Java.
+%
+%Are they integrated in the AUTOSAR development Process?
+
+%Support of (Windowed) Watchdog Concept\footnote{http://www.autosar.org/download/R2.0/AUTOSAR\_SWS\_WatchdogManager.pdf}?
+%\begin{itemize}
+%\item Watchdog manager located n Basic Software, uses hardware watchdog timers over the drivers and accesses the software components via RTE.
+%\item allows for alive supervision of single or multiple sw-components (sw-component proves aliveness by updating counter) and non-alive supervision (manager triggers periodically the sw-components)
+%\end{itemize}  
+%
+%Communication Watchdog for periodic messages~\cite{AUTOSAR2011}\\\\
+%
+%\begin{description}
+%  \item[!] Program Flow Monitoring
+%  \item[?] Modeling with LSCs (maybe in Section~\ref{sec:mbsecmonFramework})
+%  \item[?] Code Generation (maybe in Section~\ref{sec:mbsecmonFramework})
+%  \item[?] Instrumentation
+%\end{description}
+
+% Another approach is ... TODO: enter healing paper here - The paper "A framework for health monitoring of automotive electrical and electronic control systems" does explicitely not address AUTOSAR. Therefore not really well suited as related work.
+
+
+% In our process, the expressive and compact Live Sequence Chart descriptions are transformed to a more explicit representation of their semantics represented as Monitor Petri nets.
+% These are then used for code generation.
+% Mostly, transformations from different source models to Petri nets and temporal logics are performed to analyze and verify the correctness of the source model.
+% Amorim et al. \cite{Amorim2006} has defined a transformation from LSC to Colored Petri nets (CPN) to analyze the LSC definitions by simulating the CPNs.
+% Fernandez et al. \cite{Fernandes2007} transforms use cases that are specified by sequence diagrams (SD) to CPN with the goal to obtain an executable model that is easier to understand than SDs.
+% Therefore, his approach makes extensive use of the ML language, a functional programming language, and hierarchical structures to get ``readable'' results.
+In our MBSecMon process, an extended version of the expressive and compact Live Sequence Charts is used as signature specification language. 
+Kumar et al. \cite{Kumar2009} specifies protocols with LSCs and transforms them for verification to temporal logic formulas. 
+Thereby, complex LSC specifications lead to an explosion of the formula and are, therefore, with LSCs as specification language not suitable as intermediate language for the code generation for embedded systems.
+
+Besides these transformations to LTL, there are some approaches that use Petri nets directly for the specification of monitors.
+Frankowiak et al. \cite{Frankowiak2009} uses Petri nets to specify low cost process monitors on a micro controller.
+He enhances regular Petri nets by token generators and special end places (bins).
+Additionally, subnets are linked by a control net.
+For complex monitor specifications, these nets get relatively large compared to MPNs, whose semantics include an implicit evaluation logic when an event does not match to the specified sequence. 
+The MPNs are tailored to describe monitor specifications in an explicit but nevertheless compact form.
+
+%``A Dataflow Monitoring Service Based on Runtime Verification for AUTOSAR OS: Implementation and Performances''~
+%\begin{itemize}
+%  \item based on manual specified FSM, translated in LTL specification, generates Moore machines and then C code( mapping of system model and Moore machines), focused on temporal aspects
+%  \item domain specific (no instrumentation (of SW-Cs, but the RTOS kernel)) plugged into RTOS kernel
+%  \item each send and receive operation is intercepted and forwarded to a monitoring service
+%\end{itemize}
+%We:
+%\begin{itemize}
+%  \item higher abstraction level for modelling
+%  \item Monitor at software component level
+%  \item only necessary events are intercepted by instrumentation
+%\end{itemize}
+

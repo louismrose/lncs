@@ -1,0 +1,82 @@
+\newcommand{\pre}[1]{{}^\bullet {#1}}
+\newcommand{\post}[1]{{#1}^\bullet}
+\newcommand{\ppre}[1]{${}^\bullet {#1}$}
+\newcommand{\ppost}[1]{${#1}^\bullet$}
+\newcommand{\Pre}[1]{{}^\circ {#1}}
+\newcommand{\Post}[1]{{#1}^\circ}
+\newcommand{\PPre}[1]{${}^\circ {#1}$}
+\newcommand{\PPost}[1]{${#1}^\circ$}
+\newcommand{\preS}[1]{{}^\lbbb {#1}}
+\newcommand{\postS}[1]{{#1}^\lbbb}
+\newcommand{\ppreS}[1]{${}^\lbbb {#1}$}
+\newcommand{\ppostS}[1]{${#1}^\lbbb$}
+\newcommand{\PreS}[1]{{}^\lwb {#1}}
+\newcommand{\PostS}[1]{{#1}^\lwb}
+\newcommand{\PPreS}[1]{${}^\lwb {#1}$}
+\newcommand{\PPostS}[1]{${#1}^\lwb$}
+\newcommand{\ol}[1]{\overline #1}
+\newcommand{\ul}[1]{\underline #1}
+\newcommand{\ool}[1]{$\ol #1$}
+
+\newcommand{\marking}[2]{\{#1 \,|\, #2\}_{MS}}
+\newcommand{\MS}[1]{#1_{MS}}
+\newcommand{\markings}[1]{{\cal M}(#1)}
+\newcommand{\Marking}[1]{{\cal M}(#1)}
+\newcommand{\Markings}[1]{{\cal M}(#1)}
+\newcommand{\trans}[1]{{\sf $ #1$}}
+
+\newcommand{\PRE}[1]{{}^{b}{#1}}
+\newcommand{\POST}[1]{{#1}^{b}}
+
+%clashes with url-package
+%\newcommand{\path}{\mathbin{\mkern+10mu . {\mkern-21mu}\longrightarrow}}
+\newcommand{\expath}{\mathbin{\mkern+10mu : {\mkern-27mu} \longrightarrow}}
+
+
+\newcommand{\via}{\xrightarrow} % hat zwei argumente, die ignoriere ich und ersetzt nur den string des kommandos
+\newcommand{\fire}[4]{{\ifthenelse{\equal{#1}{}}{}{#1:\ }}{#2\via{#3} #4}}
+\newcommand{\ffire}[4]{$\fire{#1}{#2}{#3}{#4}$\xspace}
+\newcommand{\reachable}[2]{{\cal R}_{#1}(#2)}
+\newcommand{\rreachable}[2]{{$\reachable{#1}{#2}$}}
+
+\newcommand{\unfold}[1]{\Phi(#1)}
+
+
+\newcommand{\subnet}{\subset_N}
+\newcommand{\subneteq}{\subseteq_N}
+\newcommand{\supernet}{\superset_N}
+\newcommand{\superneteq}{\superseteq_N}
+\newcommand{\netcup}{\cup\mkern-12mu\cdot\mkern12.5mu}%testen!
+\newcommand{\netcap}{\cap\mkern-12.5mu\cdot\mkern13mu}
+\newcommand{\bignetcup}{\bigcup\mkern-15.5mu\cdot\mkern15.5mu}
+\newcommand{\finite}[1]{\underline{#1}}
+\newcommand{\ffinite}[1]{$\finite{#1}$}
+
+\newcommand{\NETS}{\cal NET}
+\newcommand{\NNETS}{$\NETs$\xspace}
+\newcommand{\X}[1]{S_{#1}\cup T_{#1}}
+
+\newcommand{\RENAME}[1]  {{\text \tt RENAME}(#1)}
+\newcommand{\UNION}[1]   {{\text \tt UNION}(#1)}
+\newcommand{\SUBTRACT}[1]{{\text \tt SUBTRACT}(#1)}
+\newcommand{\CONNECT}[1] {{\text \tt CONNECT}(#1)}
+
+\newcommand{\RRENAME}[1]  {$ \RENAME{#1}$\xspace}
+\newcommand{\UUNION}[1]   {$ \UNION{#1}$\xspace}
+\newcommand{\SSUBTRACT}[1]{$ \SUBTRACT{#1}$\xspace}
+\newcommand{\CCONNECT}[1] {$ \CONNECT{#1}$\xspace}
+
+\newcommand{\Mark}[1]{\overline{#1}}
+\newcommand{\Symbols}{{\cal S}}
+\newcommand{\SSymbols}{$\Symbols$\xspace}
+\newcommand{\final}[1]{\underline{#1}} 
+\newcommand{\initial}[1]{\overline{#1}}
+\newcommand{\terminal}[1]{\final{#1}}
+\newcommand{\iinitial}[1]{$\initial{#1}$}
+\newcommand{\ffinal}[1]{$\final{#1}$}
+\newcommand{\tterminal}[1]{$\terminal{#1}$}
+
+\newcommand{\M}[1]{{\cal M}(#1)}
+
+\newcommand{\mmarkings}[1]{$\markings{#1}$\xspace}
+\newcommand{\MMS}[1]{$\MS{#1}$\xspace}

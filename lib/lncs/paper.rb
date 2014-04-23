@@ -49,8 +49,6 @@ module LNCS
     end
   
     def copy_to(dst)
-      check_pdf_exists
-      
       FileUtils.mkdir_p(dst)
     
       if type == "zip"

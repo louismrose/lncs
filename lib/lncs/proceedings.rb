@@ -13,7 +13,7 @@ module LNCS
     end
   
     def papers
-      manifest["papers"]
+      manifest["papers"] || {}
     end
   
     def paper_file_name_for(paper_id)

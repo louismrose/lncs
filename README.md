@@ -66,12 +66,12 @@ Recommended workflow
           "sources": "/Users/louis/Downloads/submissions",
           "sections": [
             {
-              title: "Foundations",
-              papers: [7,11,14,18,20,24,35,46,63]
+              "title": "Foundations",
+              "papers": [7,11,14,18,20,24,35,46,63]
             },
             {
-              title: "Applications",
-              papers: [2,6,22,29,58,68]
+              "title": "Applications",
+              "papers": [2,6,22,29,58,68]
             }
           ],
           "papers": {
@@ -141,22 +141,22 @@ Recommended workflow
           "sources": "/Users/louis/Downloads/submissions",
           "sections": [
             {
-              title: "Foundations",
-              papers: [7,11,14,18,20,24,35,46,63]
+              "title": "Foundations",
+              "papers": [7,11,14,18,20,24,35,46,63]
             },
             {
-              title: "Applications",
-              papers: [2,6,22,29,58,68]
+              "title": "Applications",
+              "papers": [2,6,22,29,58,68]
             }
           ],
           papers: {
             "7" : {
-              pdf: "7/paper.pdf",
-              title: "MOCQL: A Declarative Language for Ad-Hoc Model Querying",
-              authors: ["Harald St\\\"orrle"]
+              "pdf": "7/paper.pdf",
+              "title": "MOCQL: A Declarative Language for Ad-Hoc Model Querying",
+              "authors": ["Harald St\\\"orrle"]
             },
             "24" : {
-              pdf: "ECMFA2013-cameraready.pdf"
+              "pdf": "ECMFA2013-cameraready.pdf"
             }
           }
         }

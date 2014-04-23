@@ -1,0 +1,80 @@
+{
+  "volume_number": 7949,
+  
+  "sources": "../sources",
+
+  "sections": [
+    {
+      "title": "Foundations",
+      "papers": [7,11,14,18,20,24,35,46,63]
+    },
+    {
+      "title": "Applications",
+      "papers": [2,6,22,29,58,68]
+    }
+  ],
+  
+  "papers" : {
+    "11" : { 
+      "pdf" :  "ArtCon-Reworked/11.pdf"
+    },
+    "20" : { 
+      "pdf" :  "20.pdf",
+      "title" : "Model-based Generation of Run-time Monitors for AUTOSAR",
+      "authors" : ["Lars Patzina", "Sven Patzina", "Thorsten Piper", "Paul Manns"]
+    },
+    "24" : { 
+      "pdf" :  "ECMFA2013-cameraready.pdf",
+      "title" : "End-User Support for Debugging Demonstration-based Model Transformation Execution",
+      "authors" : ["Yu Sun", "Jeff Gray"]
+    },
+    "35" : { 
+      "pdf" :  "Paper_35/35.pdf"
+    },
+    "7" :  { 
+      "pdf" : "7.pdf",
+      "title" : "MOCQL: A Declarative Language for Ad-Hoc Model Querying",
+      "authors" : ["Harald St\\\"orrle"]
+    },
+    "18" : { 
+      "pdf" :  "18.pdf"
+    },
+    "46" : { 
+      "pdf" :  "Camera-ready/46.pdf"
+    },
+    "14" : { 
+      "pdf" :  "paper14/paper/14.pdf"
+    },
+    "63" : { 
+      "pdf" :  "63/63.pdf"
+    },
+    "2" :  { 
+      "pdf" : "2.pdf",
+      "title" : "A Network-centric BPMN Model for Business Network Management",
+      "authors" : ["Daniel Ritter"]
+    },
+    "68" : { 
+      "pdf" :  "68.pdf",
+      "title" : "Model Driven Software Development: A practitioner takes stock and looks into future",
+      "authors" : ["Vinay Kulkarni"]
+    },
+    "58" : { 
+      "pdf" :  "58.pdf"
+    },
+    "29" : { 
+      "pdf" :  "29.pdf",
+      "title" : "Experience with Industrial adoption of Business Process Models for User Acceptance Testing",
+      "authors" : ["Deepali Kholkar", "Ajay Deshpande", "Aditya Shetye", "Pooja Yelure", "Harshit Tiwari"]
+    },
+    "6" :  { 
+      "pdf" : "6.pdf",
+      "title" : "Design Management: a Collaborative Design Solution",
+      "authors" : ["Maged Elaasar", "James Conallen"]
+    },
+    "22" : { 
+      "pdf" :  "22.pdf",
+      "title" : "Umbra Designer: Graphical Modelling for Telephony Services",
+      "authors" : ["Nicol\\'as Buezas", "Esther Guerra", "Juan de Lara", "Javier Mart\\'in", "Miguel Monforte", "Fiorella Mori", "Eva Ogallar", "Oscar P\\'erez", "Jes\\'us S\\'anchez Cuadrado"]
+    }
+  }
+}

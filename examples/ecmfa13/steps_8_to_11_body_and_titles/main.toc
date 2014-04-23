@@ -1,0 +1,47 @@
+\contentsline {chapter}{Foundations}{0}
+\contentsline {title}{MOCQL: A Declarative Language for Ad-Hoc Model Querying}{1}
+\authcount {1}
+\contentsline {author}{Harald St\"orrle}{1}
+\contentsline {title}{Supporting Different Process Views through a Shared Process Model}{18}
+\authcount {5}
+\contentsline {author}{Jochen K\"uster\unskip {} \and Hagen V\"olzer\unskip {} \and C\'edric Favre\unskip {} \and Moises Castelo Branco\unskip {} \and Krzysztof Czarnecki\unskip {}}{18}
+\contentsline {title}{Characterization of Adaptable Interpreted-DSML}{35}
+\authcount {4}
+\contentsline {author}{Eric Cariou, Olivier Le Goaer, Franck Barbier, and Samson Pierre}{35}
+\contentsline {title}{Transformation As Search}{52}
+\authcount {3}
+\contentsline {author}{Mathias Kleiner\unskip {} \and Marcos Didonet Del Fabro\unskip {} \and Davi De Queiroz Santos\unskip {}}{52}
+\contentsline {title}{Model-based Generation of Run-time Monitors for AUTOSAR}{68}
+\authcount {4}
+\contentsline {author}{Lars Patzina \and Sven Patzina \and Thorsten Piper \and Paul Manns}{68}
+\contentsline {title}{End-User Support for Debugging Demonstration-based Model Transformation Execution}{84}
+\authcount {2}
+\contentsline {author}{Yu Sun \and Jeff Gray}{84}
+\contentsline {title}{DPMP: A Software Pattern for Real-Time Tasks Merge}{100}
+\authcount {6}
+\contentsline {author}{Rania Mzid \unskip {} \and Chokri Mraidha \unskip {}\and Asma Mehiaoui\unskip {} \and Sara Tucci-Piergiovanni\unskip {} \and Jean-Philippe Babau \unskip {}\and Mohamed Abid \unskip {}\unskip \ \ignorespaces }{100}
+\contentsline {title}{Using Model Types to Support \unskip \ \ignorespaces Contract-Aware Model Substitutability}{117}
+\authcount {1}
+\contentsline {author}{ Wuliang Sun\unskip {}, Benoit Combemale\unskip {}, Steven Derrien\unskip {}, Robert B. France\unskip {} }{117}
+\contentsline {title}{Applying a Def-Use approach on signal exchange to implement SysML Model-Based Testing}{133}
+\authcount {5}
+\contentsline {author}{Fabrice Ambert\unskip {} \and Fabrice Bouquet\unskip {} \and Jonathan Lasalle\unskip {} \and \unskip \ \ignorespaces Bruno Legeard\unskip {} \and Fabien Peureux\unskip {} }{133}
+\contentsline {chapter}{Applications}{0}
+\contentsline {title}{A Network-centric BPMN Model for Business Network Management}{150}
+\authcount {1}
+\contentsline {author}{Daniel Ritter}{150}
+\contentsline {title}{Design Management: a Collaborative Design Solution}{163}
+\authcount {2}
+\contentsline {author}{Maged Elaasar \and James Conallen}{163}
+\contentsline {title}{Umbra Designer: Graphical Modelling for Telephony Services}{176}
+\authcount {9}
+\contentsline {author}{Nicol\'as Buezas \and Esther Guerra \and Juan de Lara \and Javier Mart\'in \and Miguel Monforte \and Fiorella Mori \and Eva Ogallar \and Oscar P\'erez \and Jes\'us S\'anchez Cuadrado}{176}
+\contentsline {title}{Experience with Industrial adoption of Business Process Models for User Acceptance Testing}{189}
+\authcount {5}
+\contentsline {author}{Deepali Kholkar \and Ajay Deshpande \and Aditya Shetye \and Pooja Yelure \and Harshit Tiwari}{189}
+\contentsline {title}{A Case Study in Evidence-Based DSL Evolution}{202}
+\authcount {2}
+\contentsline {author}{Jeroen van den Bos\unskip {} \and Tijs van der Storm\unskip {}}{202}
+\contentsline {title}{Model Driven Software Development: A practitioner takes stock and looks into future}{215}
+\authcount {1}
+\contentsline {author}{Vinay Kulkarni}{215}

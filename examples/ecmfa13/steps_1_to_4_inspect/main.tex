@@ -1,0 +1,39 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% In order to generate an Author Index do the following:
+% After TeXing this document start the program MakeIndex by typing
+% MAKEINDX -S SPRMINDX.STY <filename>
+% (generates an IND file for the Author Index)
+% into the DOS command line.
+% (At other systems you may have to use the command MAKEINDEX.)
+% Now TeX this file once again, then you will get an Author Index.
+% TeX this file once more, then the TOC will be complete.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass{llncs}
+
+\usepackage{makeidx}
+\makeindex
+
+\begin{document}
+
+\frontmatter
+\setcounter{page}{5}
+
+
+\pagestyle{headings}  % switches on printing of running heads
+
+\input{front_matter/preface.tex}
+\input{front_matter/organisation.tex}
+\input{front_matter/sponsors.tex}
+
+\tableofcontents
+
+\mainmatter
+
+\input{titles/index.tex}
+
+\addtocmark[2]{Author Index} % additional numbered TOC entry
+\renewcommand{\indexname}{Author Index}
+\printindex
+
+\end{document}

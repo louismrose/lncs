@@ -174,3 +174,7 @@ I'm afraid that this code is not well tested, factored or documented. It was qui
 
 Todo list:
 * Better error reporting when the titles key is specified but not authors and vice versa
+
+Acknowledgements
+----------------
+My thanks to Abel Gómez and Jordi Cabot for helping to improve LNCS, and for being courageous enough to be the first users of the tool other than myself!

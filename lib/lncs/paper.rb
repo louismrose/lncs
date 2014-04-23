@@ -5,7 +5,7 @@ require 'lncs/actions'
 
 module LNCS
   class Paper
-    attr_accessor :manifest, :path
+    attr_accessor :manifest, :path, :proceedings
     
     def pdf
       manifest["pdf"]
@@ -158,7 +158,7 @@ module LNCS
     end
   
     def actions
-      Actions.new
+      Actions.new(proceedings.source_directory)
     end
   end
 end

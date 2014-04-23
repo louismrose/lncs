@@ -5,10 +5,11 @@ module LNCS
     attr_accessor :manifest, :proceedings
   
     def papers
-      manifest["papers"].map do |paper_id|      
+      manifest["papers"].map do |paper_id|
         Paper.new.tap do |p|
           p.manifest = proceedings.paper_manifest_for(paper_id)
           p.path = proceedings.paper_path_for(paper_id)
+          p.proceedings = proceedings
         end
       end
     end
@@ -52,9 +53,10 @@ module LNCS
       papers.each { |paper| puts "#{"%03d" % paper.id} -- #{paper.page_count}pgs #{paper.type}" }
     end
     
-  private
+    private
+    
     def actions
-      Actions.new
+      Actions.new(proceedings.source_directory)
     end
   end
 end

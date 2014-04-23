@@ -69,7 +69,7 @@ module LNCS
 
   private
     def actions
-      Actions.new
+      Actions.new(source_directory)
     end
   end
 end

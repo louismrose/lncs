@@ -32,7 +32,6 @@ module LNCS
     end
   
     def generate_title_to(dst, start_page)
-      raise "Error: Cannot generate title from PDF for paper ##{id}" if type == "pdf"
       check_pdf_exists
     
       captured = title_page_from_manifest_or_latex
@@ -129,6 +128,7 @@ module LNCS
   \\author{#{authors_from_manifest_or_latex.join(" \\and ")}}\n
   """
       else
+        raise "Error: lncs cannot extract title and authors from a PDF file. Please specify the title and authors in the manifest for paper ##{id})" if type == "pdf"
         captured = ""
         each_tex do |tex|
           capturing = false

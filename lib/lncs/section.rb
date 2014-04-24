@@ -21,6 +21,10 @@ module LNCS
     def copy_to(dst)
       papers.each { |paper| paper.copy_to("#{dst}/#{paper.id}") }
     end
+    
+    def paper_data_for_manifest(existing_data)
+      papers.reduce({}) { |data, paper| data.merge(paper.data_for_manifest(existing_data)) }
+    end
   
     def generate_body_to(dst, volume_number, start_page)
       papers.each do |paper|

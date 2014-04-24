@@ -71,14 +71,13 @@ Creating a Springer LNCS proceedings with `lncs` involves two activities: ensuri
               "pdf": "7/paper.pdf"
             },
             "24" : {
-              // FIXME: delete as appropriate
-              "pdf": "ECMFA2013-cameraready.pdf",
-              "pdf": "figure1.pdf"
+              "pdf": ["ECMFA2013-cameraready.pdf", "figure1.pdf"]
+              "FIXME": "Reduce the PDF key from an array to a single value which corresponds to the compiled PDF."
             }
           }
         }
         
-5. Your manifest will now contain a `papers` key for each submission that is distributed as a ZIP file. Search for any "FIXME" comments that have been inserted by `lncs inspect` and delete any erroneous `pdf` key values. (Each submission should have a single value for the `pdf` key).
+5. Your manifest will now contain a `papers` key for each submission that is distributed as a ZIP file. Search for any "FIXME" keys that have been inserted by `lncs inspect` and correct any erroneous `pdf` key values. (Each submission should have a single value for the `pdf` key).
         
         > vi manifest.json
         # Deleted the line: "pdf": "figure1.pdf"

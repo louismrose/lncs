@@ -60,6 +60,29 @@ module LNCS
         actions.copy_file(path, File.join(dst, name))
       end
     end
+    
+    def data_for_manifest(existing_data)
+      if existing_data.key?(id)
+        { id => existing_data[id] }
+        
+      elsif type == "zip"
+        data = { pdf: paths_to_pdfs }
+        
+        case data[:pdf].size
+        when 1
+          data[:pdf] = data[:pdf].first
+        when 0
+          data[:FIXME] = "Change the PDF key to the path (relative, within the ZIP) of the compiled PDF."
+        else
+          data[:FIXME] = "Reduce the PDF key from an array to a single value which corresponds to the compiled PDF." 
+        end
+
+        { id => data }
+      
+      else
+        {}
+      end
+    end
   
     def page_count
       check_pdf_exists
@@ -75,6 +98,19 @@ module LNCS
         pdf_exists = Zip::ZipFile.open(path) { |zipfile| zipfile.find_entry(pdf) }
         raise "Error: no PDF file found at path '#{pdf}' within the ZIP file #{path}" unless pdf_exists  
       end
+    end
+    
+    # Locate all PDF files within the ZIP
+    def paths_to_pdfs
+      paths = []
+      
+      Zip::ZipFile.open(path) do |zipfile|
+        zipfile.select { |file| zipfile.get_entry(file).file? }.each do |file|
+          paths << file.name if file.name.end_with? ".pdf"
+        end
+      end
+      
+      paths
     end
     
     def open_pdf      

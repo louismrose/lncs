@@ -46,6 +46,13 @@ module LNCS
     def copy_to(dst)
       sections.each { |section| section.copy_to(dst) }
     end
+    
+    def add_papers_to_manifest
+      new_papers = sections.reduce({}) { |data, section| data.merge(section.paper_data_for_manifest(papers)) }
+      new_manifest = manifest.dup
+      new_manifest["papers"] = new_papers
+      actions.create_file("manifest.json", JSON.pretty_generate(new_manifest))
+    end
 
     def generate_body_to(dst)
       start_page = 1

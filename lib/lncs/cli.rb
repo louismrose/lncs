@@ -17,10 +17,11 @@ module LNCS
       create_file 'titles/index.tex'
     end
 
-    desc "inspect", "Unpack the submissions so that their contents can be inspected manually"
+    desc "inspect", "Inspect the submissions and prepare manifest for the lncs report, body and titles subcommands."
     def inspect
       remake_directory("submissions")
       proceedings.copy_to("submissions")
+      proceedings.add_papers_to_manifest
     end
 
     desc "body", "Generate the set of directories containing the body of the report, in the format required by Springer LNCS"

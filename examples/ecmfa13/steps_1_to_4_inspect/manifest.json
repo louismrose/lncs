@@ -1,16 +1,31 @@
 {
   "volume_number": 7949,
-  
   "sources": "../sources",
-
   "sections": [
     {
       "title": "Foundations",
-      "papers": [7,11,14,18,20,24,35,46,63]
+      "papers": [
+        7,
+        11,
+        14,
+        18,
+        20,
+        24,
+        35,
+        46,
+        63
+      ]
     },
     {
       "title": "Applications",
-      "papers": [2,6,22,29,58,68]
+      "papers": [
+        2,
+        6,
+        22,
+        29,
+        58,
+        68
+      ]
     }
   ]
 }

@@ -17,20 +17,5 @@
       "title": "Applications",
       "papers": [2,6,22,29,58,68]
     }
-  ],
-  
-  // Include the papers key to indicate the location of the PDF file for each submission
-  "papers": {
-    "7" : {
-      "pdf": "7/paper7.pdf",
-      // You can optionally override the title and list of authors for any paper too
-      "title": "MOCQL: A Declarative Language for Ad-Hoc Model Querying",
-      // You can use LaTeX in the names of authors (and titles), but be sure to escape
-      // any backslashes (for the JSON parser)
-      "authors": ["Harald St\\\"orrle"]
-    },
-    "24" : {
-      "pdf": "ECMFA2013-cameraready.pdf"
-    }
-  }
+  ]
 }

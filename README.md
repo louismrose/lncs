@@ -10,20 +10,22 @@ You'll need to install Ruby 1.9 or later. I recommend doing so via [rvm](https:/
 
 You can then install `lncs` via Ruby gems: `gem install lncs`
 
-Get started with the `lncs` executable: `lncs help`
-
 Recommended workflow
 --------------------
+Creating a Springer LNCS proceedings with `lncs` involves two activities: ensuring that `lncs` has sufficient information about your proceedings and submissions (steps 1-5, below), and using `lncs` to generate all of the artefacts that Springer require for an LNCS proceedings (steps 7-11).
 
-1. Download the submissions for your volume
+1. Download the submissions for your proceedings (e.g., from EasyChair). Please note that:
+    * `lncs` works best for submissions that are packaged as a single ZIP file that contains both the LaTeX source and a compiled PDF.
+    * `lncs` can also be used for submissions that do not include LaTeX source files, or that are packaged as a single PDF file. For submissions that do not include LaTeX source files, you will need to specify some extra information in the manifest (more details below). 
+    * `lncs` does not work with submissions packages as MS Word files.
 
-2. Setup a working directory
+2. Create a new working directory:
 
         > mkdir ecmfa2013
         > cd ecmfa2013
         > lncs init    
 
-3. Customise the manifest (e.g., set the path to the submissions, the volume number, ...)
+3. Setup the manifest (e.g., set the path to the submissions, the volume number, ...)
 
         > vi manifest.json
         > cat manifest.json
@@ -42,24 +44,14 @@ Recommended workflow
           ]
         }
     
-4. Unpack and inspect all of the submissions
+4. Use `lncs inspect` to decompress any submissions packaged as ZIP files, and to locate compiled PDF files:
 
         > lncs inspect
-        > cd submissions
-        > ls -R
-    
-        ./ecmfa2013_submission_07:
-        7
-        ./ecmfa2013_submission_07/7:
-        paper7.tex   paper7.pdf   copyright.pdf
-    
-        ./ecmfa2013_submission_24:
-        ECMFA2013-cameraready.pdf   ECMFA2013-cameraready.docx  copyright.pdf
-
-
-5. Update the manifest with the paths to the PDF files of each paper
-
-        > vi manifest.json
+        Inspecting paper 7 at submissions/ecmfa2013_submission_07/*
+        Inspecting paper 11 submissions/ecmfa2013_submission_11/*
+        ...
+        Updating manifest.json
+        
         > cat manifest.json
         {
           "volume_number": 7949,
@@ -79,12 +71,44 @@ Recommended workflow
               "pdf": "7/paper.pdf"
             },
             "24" : {
-              "pdf": "ECMFA2013-cameraready.pdf"
+              // FIXME: delete as appropriate
+              "pdf": "ECMFA2013-cameraready.pdf",
+              "pdf": "figure1.pdf"
             }
           }
         }
+        
+5. Your manifest will now contain a `papers` key for each submission that is distributed as a ZIP file. Search for any "FIXME" comments that have been inserted by `lncs inspect` and delete any erroneous `pdf` key values. (Each submission should have a single value for the `pdf` key).
+        
+        > vi manifest.json
+        # Deleted the line: "pdf": "figure1.pdf"
+        > cat manifest.json
+        {
+          "volume_number": 7949,
+          "sources": "/Users/louis/Downloads/submissions",
+          "sections": [
+            {
+              "title": "Foundations",
+              "papers": [7,11,14,18,20,24,35,46,63]
+            },
+            {
+              "title": "Applications",
+              "papers": [2,6,22,29,58,68]
+            }
+          ],
+          "papers": {
+            "7" : {
+              "pdf": "7/paper.pdf"
+            },
+            "24" : {
+              "pdf": "ECMFA2013-cameraready.pdf",
+            }
+          }
+        }
+        
+    Note that the `pdf` key should contain the relative path to the PDF file in any submission packaged as a ZIP file.
 
-6. Check the status of the submissions 
+6. Once your manifest has been finalised. All of the other `lncs` subcommand will work. Start by checking the status of the submissions:
 
         > lncs report
         Foundations
@@ -105,9 +129,9 @@ Recommended workflow
         058 -- 13pgs zip
         068 -- 11pgs zip
 
-  If a submission exceeds your page limit, you may wish to contact the authors. If a submission is a PDF rather than a ZIP file, you may wish to do the same as you will need to send to Springer the sources and a signed copyright form for each submission.
+  If a submission exceeds your page limit, you may wish to contact the authors. If a submission is a PDF rather than a ZIP file, you may wish to do the same as you will need to send to Springer the LaTeX sources (and a signed copyright form).
 
-7. Generate the set of directories required by Springer for the body of the proceedings
+7. Generate the set of directories required by Springer for the body of the proceedings:
 
         > lncs body
         > ls body
@@ -120,21 +144,26 @@ Recommended workflow
         body/79490001/7:
         paper7.tex   paper7.pdf   copyright.pdf
     
-8. Generate the title pages used to construct the table of contents and author index
+8. Generate the title pages used to construct the table of contents and author index:
 
         > lncs titles
         > ls titles
         0001.tex  0020.tex  0054.tex  0086.tex  0119.tex  0152.tex  0178.tex  0204.tex  index.tex
         0003.tex  0037.tex  0070.tex  0102.tex  0135.tex  0165.tex  0191.tex  0217.tex
     
-9. Run LaTeX to produce your PDF
+9. Run LaTeX to produce your PDF:
 
-        > latex2pdf main.tex
+        > latex2pdf main.tex > main.pdf
         > open main.pdf
     
-10. Override any titles or names of authors (because, for example, `lncs` cannot extract title page information from MS Word source files).
+10. Inspect your PDF to ensure that all of the titles and names of authors are correct in the table of contents. Note that:
 
-        > vi manifest.json
+    * `lncs titles` works best for submissions that include LaTeX source files.
+    * `lncs titles` extracts the contents of the \title and \author LaTeX tags verbatim. If an author has used non-standard or custom LaTeX commands in their \title and \author declarations, you may need to manually specify the title and authors of this submission in the `lncs` manifest (as described below).
+    * `lncs titles` cannot extract title page information from MS Word or PDF files. You must manually specify the title and authors of submissions containing no LaTeX source in the `lncs` manifest (as described below).
+
+You can override any titles or names of authors in the manifest file. For example:
+
         > cat manifest.json
         {
           "volume_number": 7949,
@@ -155,16 +184,22 @@ Recommended workflow
               "title": "MOCQL: A Declarative Language for Ad-Hoc Model Querying",
               "authors": ["Harald St\\\"orrle"]
             },
+            "20" : { 
+              "title" : "Model-based Generation of Run-time Monitors for AUTOSAR",
+              "authors" : ["Lars Patzina", "Sven Patzina", "Thorsten Piper", "Paul Manns"]
+            },
             "24" : {
               "pdf": "ECMFA2013-cameraready.pdf"
             }
           }
         }
+        
+If a title or author must contain a LaTeX command, ensure that your JSON is properly escaped. For example, the LaTeX command `\"` becomes `\\\"` in the manifest as backslashes and quotes are escaped in JSON.
 
 11. Regenerate your titles and PDF.
 
         > lncs titles
-        > latex2pdf main.tex
+        > latex2pdf main.tex > main.pdf
         > open main.pdf
 
 
